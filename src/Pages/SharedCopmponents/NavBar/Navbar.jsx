@@ -1,5 +1,6 @@
 import React from "react";
 import { NavLink } from "react-router";
+import DakBox from "../DakBoxLogo/DakBox";
 
 const Navbar = () => {
     const navItems = <>
@@ -42,26 +43,13 @@ const Navbar = () => {
             }
           </ul>
         </div>
-        <a className="btn btn-ghost text-xl">daisyUI</a>
+        <a className="btn btn-ghost text-xl"><DakBox></DakBox></a>
       </div>
       <div className="navbar-center hidden lg:flex">
         <ul className="menu menu-horizontal px-1">
-          <li>
-            <a>Item 1</a>
-          </li>
-          <li>
-            <details>
-              <summary>Parent</summary>
-              <ul className="p-2 bg-base-100 w-40 z-1">
-                {
+         {
                     navItems
-                }
-              </ul>
-            </details>
-          </li>
-          <li>
-            <a>Item 3</a>
-          </li>
+        }
         </ul>
       </div>
       <div className="navbar-end">
