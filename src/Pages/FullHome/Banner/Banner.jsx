@@ -28,8 +28,7 @@ const Banner = () => {
         <img src={bannerImg3} />
       </div>
     </Carousel>
-    <HowItWorks></HowItWorks>
-    <Services></Services>
+    
     </div>
   );
 };
