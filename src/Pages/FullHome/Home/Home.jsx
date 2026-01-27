@@ -4,6 +4,8 @@ import HowItWorks from './HowItWorks/HowItWorks';
 import Services from './Services/Services';
 import Brands from './Brands/Brands';
 import CTA from './CTA/CTA';
+import Priority from './Priority/Priority';
+import Review from './Rivew/Rivew';
 
 const Home = () => {
     return (
@@ -13,6 +15,8 @@ const Home = () => {
     <Services></Services>
     <Brands></Brands>
     <CTA></CTA>
+    <Priority></Priority>
+    <Review></Review>
         </div>
     );
 };

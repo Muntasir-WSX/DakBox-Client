@@ -22,7 +22,7 @@ const Navbar = () => {
   );
 
   return (
-    <div className="max-w-7xl mx-auto px-4 mt-4 relative z-[100]">
+    <div className="max-w-7xl mx-auto px-4 mt-4 relative z-100">
       {/* Drawer Wrapper */}
       <div className="drawer">
         <input id="my-drawer" type="checkbox" className="drawer-toggle" />
