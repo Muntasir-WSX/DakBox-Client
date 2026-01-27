@@ -34,7 +34,7 @@ const Review = () => {
                 </div>
 
                 {/* Movable Focused Slider Area */}
-                <div className="relative flex justify-center items-center h-[450px]">
+                <div className="relative flex justify-center items-center h-112.5">
                     <div className="flex gap-4 md:gap-8 items-center">
                         <AnimatePresence mode="popLayout">
                             {/* Proti bar 3-ti card dekhabe (Left, Center/Focused, Right) */}
@@ -54,7 +54,7 @@ const Review = () => {
                                         }}
                                         exit={{ opacity: 0, x: -offset * 100 }}
                                         transition={{ duration: 0.5, ease: "easeInOut" }}
-                                        className={`${isFocused ? 'w-[350px] md:w-[450px]' : 'hidden lg:block w-[300px]'}`}
+                                        className={`${isFocused ? 'w-87.5 md:w-112.5' : 'hidden lg:block w-75'}`}
                                     >
                                         <ReviewCard review={reviews[cardIndex]} isFocused={isFocused} />
                                     </motion.div>
