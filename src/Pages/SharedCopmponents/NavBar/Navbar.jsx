@@ -27,13 +27,14 @@ const Navbar = () => {
       <li><NavLink to="/coverage" className={navLinkStyles}>Coverage</NavLink></li>
       <li><NavLink to="/about" className={navLinkStyles}>About Us</NavLink></li>
       <li><NavLink to="/pricing" className={navLinkStyles}>Pricing</NavLink></li>
-      <li><NavLink to="/blog" className={navLinkStyles}>Blog</NavLink></li>
-      <li><NavLink to="/contact" className={navLinkStyles}>Contact</NavLink></li>
+      <li><NavLink to="/trackorder" className={navLinkStyles}>Track Order</NavLink></li>
+      <li><NavLink to="/sendparcel" className={navLinkStyles}>Send Parcel</NavLink></li>
+      <li><NavLink to="/contact" className={navLinkStyles}>Be a Rider</NavLink></li>
     </>
   );
 
   return (
-    <div className="max-w-7xl mx-auto px-4 mt-4 relative z-[100]">
+    <div className="max-w-7xl mx-auto px-4 mt-4 relative z-100">
       <div className="drawer">
         <input id="my-drawer" type="checkbox" className="drawer-toggle" />
         
