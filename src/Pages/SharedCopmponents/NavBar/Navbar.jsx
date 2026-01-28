@@ -1,9 +1,21 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
 import DakBox from "../DakBoxLogo/DakBox";
-import { MoveUpRight, Menu } from "lucide-react";
+import { MoveUpRight, Menu, LogOut } from "lucide-react"; 
+import useAuth from "../../../Hooks/useAuth"; 
+import toast from "react-hot-toast";
 
 const Navbar = () => {
+  const { user, logOut } = useAuth(); 
+
+  const handleLogOut = () => {
+    logOut()
+      .then(() => {
+        toast.success("Logged out successfully");
+      })
+      .catch((error) => console.log(error));
+  };
+
   const navLinkStyles = ({ isActive }) =>
     `transition-colors duration-200 font-medium ${
       isActive ? "text-black font-bold lg:border-b-2 lg:border-black" : "text-gray-500 hover:text-black"
@@ -43,28 +55,38 @@ const Navbar = () => {
               </ul>
             </div>
 
-            {/* End: Auth Buttons - Path Updated */}
             <div className="navbar-end gap-2 md:gap-3">
-              {/* Login Path Updated to /signin */}
-              <NavLink to="/signin" className="btn bg-gray-50 hover:bg-gray-200 border border-gray-100 rounded-full px-4 md:px-5 flex items-center gap-2 group h-10 min-h-0">
-                <span className="font-bold text-black text-[10px] md:text-sm uppercase tracking-tight">Sign In</span>
-                <div className="bg-black text-white rounded-full p-1 transition-transform group-hover:rotate-45 hidden sm:block">
-                  <MoveUpRight size={12} />
-                </div>
-              </NavLink>
+              
+              {user ? (
+                <button 
+                  onClick={handleLogOut}
+                  className="btn bg-red-50 hover:bg-red-100 text-red-600 border border-red-100 rounded-full px-4 md:px-6 flex items-center gap-2 h-10 min-h-0 transition-all"
+                >
+                  <span className="font-bold text-[10px] md:text-sm uppercase tracking-tight">Logout</span>
+                  <LogOut size={16} />
+                </button>
+              ) : (
+                <>
+                  <NavLink to="/signin" className="btn bg-gray-50 hover:bg-gray-200 border border-gray-100 rounded-full px-4 md:px-5 flex items-center gap-2 group h-10 min-h-0">
+                    <span className="font-bold text-black text-[10px] md:text-sm uppercase tracking-tight">Sign In</span>
+                    <div className="bg-black text-white rounded-full p-1 transition-transform group-hover:rotate-45 hidden sm:block">
+                      <MoveUpRight size={12} />
+                    </div>
+                  </NavLink>
 
-              {/* Register Path Updated to /signup */}
-              <NavLink to="/signup" className="btn bg-[#D9F26B] hover:bg-[#c4db59] border-none rounded-full px-4 md:px-5 flex items-center gap-2 group h-10 min-h-0">
-                <span className="font-bold text-black text-[10px] md:text-sm uppercase tracking-tight">Sign Up</span>
-                <div className="bg-black text-[#D9F26B] rounded-full p-1 transition-transform group-hover:rotate-45 hidden sm:block">
-                  <MoveUpRight size={12} />
-                </div>
-              </NavLink>
+                  <NavLink to="/signup" className="btn bg-[#D9F26B] hover:bg-[#c4db59] border-none rounded-full px-4 md:px-5 flex items-center gap-2 group h-10 min-h-0">
+                    <span className="font-bold text-black text-[10px] md:text-sm uppercase tracking-tight">Sign Up</span>
+                    <div className="bg-black text-[#D9F26B] rounded-full p-1 transition-transform group-hover:rotate-45 hidden sm:block">
+                      <MoveUpRight size={12} />
+                    </div>
+                  </NavLink>
+                </>
+              )}
             </div>
           </div>
         </div>
 
-        {/* Drawer Sidebar (Mobile) */}
+        
         <div className="drawer-side">
           <label htmlFor="my-drawer" aria-label="close sidebar" className="drawer-overlay"></label>
           <ul className="menu p-6 w-80 min-h-full bg-white text-base-content space-y-4 pt-10">
@@ -72,11 +94,7 @@ const Navbar = () => {
               <DakBox />
             </div>
             {navItems}
-            <div className="pt-6 border-t border-gray-100 flex flex-col gap-3">
-               {/* Mobile Paths Updated */}
-               <NavLink to="/signin" className="btn btn-outline rounded-full">Sign In</NavLink>
-               <NavLink to="/signup" className="btn bg-[#D9F26B] border-none rounded-full">Sign Up</NavLink>
-            </div>
+            
           </ul>
         </div>
       </div>
