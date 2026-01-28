@@ -2,6 +2,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { FcGoogle } from "react-icons/fc";
 import { Link } from "react-router-dom";
+import useAuth from "../../../Hooks/useAuth";
 
 const SignUp = () => {
   const {
@@ -10,8 +11,19 @@ const SignUp = () => {
     formState: { errors },
   } = useForm();
 
+
+  const { createuser } = useAuth();
+
   const onSubmit = (data) => {
     console.log(data);
+    createuser(data.email, data.password)
+      .then((result) => {
+        const user = result.user;
+        console.log(user);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   return (
