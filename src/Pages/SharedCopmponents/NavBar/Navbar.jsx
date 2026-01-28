@@ -55,18 +55,32 @@ const Navbar = () => {
               </ul>
             </div>
 
-            <div className="navbar-end gap-2 md:gap-3">
-              
+            <div className="navbar-end gap-3">
               {user ? (
-                <button 
-                  onClick={handleLogOut}
-                  className="btn bg-red-50 hover:bg-red-100 text-red-600 border border-red-100 rounded-full px-4 md:px-6 flex items-center gap-2 h-10 min-h-0 transition-all"
-                >
-                  <span className="font-bold text-[10px] md:text-sm uppercase tracking-tight">Logout</span>
-                  <LogOut size={16} />
-                </button>
+                <div className="flex items-center gap-3">
+                  {/* User Profile Image with Tooltip (Email on Hover) */}
+                  <div className="tooltip tooltip-bottom lowercase" data-tip={user?.email}>
+                    <div className="avatar online cursor-pointer">
+                      <div className="w-10 h-10 rounded-full border-2 border-[#D9F26B]">
+                        <img 
+                          src={user?.photoURL || "https://i.ibb.co/3pC9v2h/user-placeholder.png"} 
+                          alt="User Profile" 
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Logout Button */}
+                  <button 
+                    onClick={handleLogOut}
+                    className="btn bg-red-50 hover:bg-red-100 text-red-600 border border-red-100 rounded-full px-4 h-10 min-h-0 transition-all flex items-center gap-2"
+                  >
+                    <span className="font-extrabold text-xs uppercase hidden md:block">Logout</span>
+                    <LogOut size={16} />
+                  </button>
+                </div>
               ) : (
-                <>
+                <div className="flex gap-2">
                   <NavLink to="/signin" className="btn bg-gray-50 hover:bg-gray-200 border border-gray-100 rounded-full px-4 md:px-5 flex items-center gap-2 group h-10 min-h-0">
                     <span className="font-bold text-black text-[10px] md:text-sm uppercase tracking-tight">Sign In</span>
                     <div className="bg-black text-white rounded-full p-1 transition-transform group-hover:rotate-45 hidden sm:block">
@@ -80,13 +94,12 @@ const Navbar = () => {
                       <MoveUpRight size={12} />
                     </div>
                   </NavLink>
-                </>
+                </div>
               )}
             </div>
           </div>
         </div>
 
-        
         <div className="drawer-side">
           <label htmlFor="my-drawer" aria-label="close sidebar" className="drawer-overlay"></label>
           <ul className="menu p-6 w-80 min-h-full bg-white text-base-content space-y-4 pt-10">
@@ -94,7 +107,6 @@ const Navbar = () => {
               <DakBox />
             </div>
             {navItems}
-            
           </ul>
         </div>
       </div>
