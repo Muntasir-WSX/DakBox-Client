@@ -16,7 +16,7 @@ const SignIn = () => {
           <input type="email" {...register('email')} className="input" placeholder="Email" />
 
           <label className="label">Password</label>
-          <input type="password" {...register('password')} className="input" placeholder="Password" />
+          <input type="password" {...register('password', { required: true, minLength: 6, pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/ })} className="input" placeholder="Password" />
           
           <div>
             <a className="link link-hover">Forgot password?</a>
