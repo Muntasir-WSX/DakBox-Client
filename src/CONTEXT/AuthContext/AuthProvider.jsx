@@ -26,23 +26,29 @@ const AuthProvider = ({children}) => {
         return signInWithEmailAndPassword( auth, email, password);
     }
 
+        // LogOut User
     const logOut = () => {
         setLoading(true);
         return signOut(auth);
     }
 
+        // SignIn with Google
     const signInWithGoogle = () => {
         setLoading(true);
         return signInWithPopup(auth, googleProvider);
     }
-
+        // Update User Profile
     const updateUserProfile = (name, photo) => {
     return updateProfile(auth.currentUser, {
         displayName: name, 
         photoURL: photo
     }).then(() => {
+        setUser((prevUser) => ({
+            ...prevUser,
+            displayName: name,
+            photoURL: photo
+        }));
     
-    setUser({ ...auth.currentUser, displayName: name, photoURL: photo });
   });
 
 }

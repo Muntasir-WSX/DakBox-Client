@@ -14,35 +14,41 @@ const SignIn = () => {
     signIn(data.email, data.password)
       .then((result) => {
         toast.success("Welcome back!", {
-          style: {
-            border: "1px solid #D4E96D",
-            padding: "16px",
-            color: "#1F2937",
-          },
-          iconTheme: {
-            primary: "#D4E96D",
-            secondary: "#FFFAEE",
-          },
-        });
+        style: {
+          background: "#1F2937", // Dark background
+          color: "#D9F26B",      // Lime text
+          border: "1px solid #D9F26B",
+        },
+        iconTheme: {
+          primary: "#D9F26B",
+          secondary: "#1F2937",
+        },
+      });
         navigate("/");
       })
       .catch((error) => {
-        toast.error("Login failed. Check your credentials.");
+      toast.error("Login failed. Check your credentials.", {
+        style: {
+          background: "#FEF2F2", // Light red bg
+          color: "#991B1B",      // Dark red text
+          border: "1px solid #FCA5A5",
+        },
       });
-  };
+    });
+};
 
   const handleGoogleSignIn = () => {
     signInWithGoogle()
       .then((result) => {
         toast.success("Google Sign-in Successful", {
-            style: { background: "#D4E96D", color: "#1F2937" }
-        });
-        navigate("/");
-      })
-      .catch((error) => {
-        toast.error(error.message);
+        style: { background: "#D9F26B", color: "#000" } // Lime bg, Black text
       });
-  };
+      navigate("/");
+    })
+    .catch((error) => {
+      toast.error(error.message);
+    });
+};
 
   return (
     <div className="w-full">

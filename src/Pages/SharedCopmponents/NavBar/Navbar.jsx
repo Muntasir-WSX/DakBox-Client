@@ -10,10 +10,19 @@ const Navbar = () => {
 
   const handleLogOut = () => {
     logOut()
-      .then(() => {
-        toast.success("Logged out successfully");
-      })
-      .catch((error) => console.log(error));
+    .then(() => {
+      toast.success("Logged out successfully", {
+        icon: '👋',
+        style: {
+          background: "#1F2937",
+          color: "#D9F26B",
+        },
+      });
+    })
+    .catch((error) => {
+      toast.error("Logout failed!");
+      console.log(error);
+    });
   };
 
   const navLinkStyles = ({ isActive }) =>
@@ -28,7 +37,7 @@ const Navbar = () => {
       <li><NavLink to="/about" className={navLinkStyles}>About Us</NavLink></li>
       <li><NavLink to="/pricing" className={navLinkStyles}>Pricing</NavLink></li>
       <li><NavLink to="/trackorder" className={navLinkStyles}>Track Order</NavLink></li>
-      <li><NavLink to="/sendparcel" className={navLinkStyles}>Send Parcel</NavLink></li>
+      <li><NavLink to="/send-parcel" className={navLinkStyles}>Send Parcel</NavLink></li>
       <li><NavLink to="/contact" className={navLinkStyles}>Be a Rider</NavLink></li>
     </>
   );
@@ -45,9 +54,7 @@ const Navbar = () => {
               <label htmlFor="my-drawer" className="btn btn-ghost lg:hidden p-0 mr-2 min-h-0 h-auto">
                 <Menu size={24} className="text-gray-600" />
               </label>
-              <NavLink to="/" className="flex items-center">
-                <DakBox />
-              </NavLink>
+              <DakBox />
             </div>
 
             <div className="navbar-center hidden lg:flex">
@@ -64,7 +71,7 @@ const Navbar = () => {
                     <div className="avatar online cursor-pointer">
                       <div className="w-10 h-10 rounded-full border-2 border-[#D9F26B]">
                         <img 
-                          src={user?.photoURL || "https://i.ibb.co/3pC9v2h/user-placeholder.png"} 
+                          src={user?.photoURL || "https://ui-avatars.com/api/?name="} 
                           alt="User Profile" 
                         />
                       </div>

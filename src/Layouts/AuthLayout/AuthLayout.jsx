@@ -9,9 +9,9 @@ const AuthLayout = () => {
             
             
             <div className="absolute top-6 left-6 md:top-10 md:left-12 z-50">
-                <Link to="/">
+               
                     <DakBox />
-                </Link>
+                
             </div>
             {/* Left Side: Form Section */}
             <div className="w-full lg:w-1/2 flex items-center justify-center p-6 md:p-12 pt-32 md:pt-40">
