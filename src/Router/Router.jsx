@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router";
+import { createBrowserRouter, Navigate } from "react-router";
 import MainLayout from "../Layouts/MainLayout/MainLayout";
 import Home from "../Pages/FullHome/Home/Home"
 import AuthLayout from "../Layouts/AuthLayout/AuthLayout";
@@ -7,36 +7,58 @@ import SignUp from "../Pages/AuthPages/SignUp/SignUp";
 import Coverage from "../Pages/Coverage/Coverage";
 import SendParcel from "../Pages/SendParcel/SendParcel";
 import PrivateRoutes from "../Routes/PrivateRoutes";
+import DashBoardLayout from "../Layouts/DashBoardLayout/DashBoardLayout";
+import MyParcels from "../Pages/DashBoard/MyParcels/MyParcels";
+
 export const router = createBrowserRouter([
+  // ১. মেইন ওয়েবসাইট লেআউট (Navbar & Footer থাকবে)
   {
     path: "/",
-    Component: MainLayout,
+    element: <MainLayout />, 
     children: [
       {
         index: true,
-        Component: Home
+        element: <Home />
       },
       {
-        path: "/coverage",
-        Component: Coverage 
+        path: "coverage",
+        element: <Coverage /> 
       },
       {
-        path: "/send-parcel",
-        element: <PrivateRoutes><SendParcel></SendParcel></PrivateRoutes>
+        path: "send-parcel",
+        element: <PrivateRoutes><SendParcel /></PrivateRoutes>
+      },
+    ]
+  },
+
+  // ২. ড্যাশবোর্ড লেআউট (সম্পূর্ণ আলাদা লেআউট - মেইন নেভবার এখানে আসবে না)
+  {
+    path: "dashboard",
+    element: <PrivateRoutes><DashBoardLayout /></PrivateRoutes>,
+    children: [
+      {
+        index: true,
+        element: <Navigate to="myparcels" replace /> // /dashboard এ গেলে সরাসরি My Parcels এ নিবে
+      },
+      {
+        path: 'myparcels',
+        element: <MyParcels />
       }
     ]
   },
+
+  // ৩. অথেনটিকেশন লেআউট (SignIn/SignUp)
   {
-    path:"/",
-    Component: AuthLayout,
-    children:[
+    path: "/",
+    element: <AuthLayout />,
+    children: [
       {
-        path:"/signin",
-        Component: SignIn
+        path: "signin",
+        element: <SignIn />
       },
       {
-        path:"/signup",
-        Component: SignUp
+        path: "signup",
+        element: <SignUp />
       }
     ]
   }

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast, { Toaster } from "react-hot-toast";
-import Swal from "sweetalert2"; // SweetAlert2 ইমপোর্ট করুন
+import Swal from "sweetalert2"; 
 import { warehouseData } from "../../Data/WareHouse";
 import { FormInput, FormSelect, FormTextArea } from "./FormComponents";
 import useAuth from "../../Hooks/useAuth";
@@ -23,7 +23,6 @@ const SendParcel = () => {
 
   const watchedValues = watch();
 
-  // Pricing Logic
   useEffect(() => {
     const { parcelType, weight, senderDistrict, receiverDistrict } = watchedValues;
     if (!senderDistrict || !receiverDistrict) return setDeliveryCharge(0);
@@ -55,7 +54,7 @@ const SendParcel = () => {
   };
 
   const onSubmit = async (data) => {
-    // SweetAlert2 কনফার্মেশন মোডাল
+    
     Swal.fire({
       title: "Confirm Your Booking?",
       text: `Total Charge: ৳${deliveryCharge}. Do you want to proceed?`,
@@ -80,7 +79,7 @@ const SendParcel = () => {
         };
 
         try {
-          // সার্ভারে ডাটা পাঠানো
+          
           const res = await axiosSecure.post("/parcels", finalData);
           console.log("Server Response:", res.data);
           if (res.data.insertedId) {
@@ -90,7 +89,7 @@ const SendParcel = () => {
               icon: "success",
               confirmButtonColor: "#D4E96D",
             });
-            reset(); // ফর্ম ক্লিয়ার করা
+            reset(); 
           }
         } catch (error) {
           console.error("Booking Error:", error);
