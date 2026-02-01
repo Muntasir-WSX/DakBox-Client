@@ -10,6 +10,7 @@ import PrivateRoutes from "../Routes/PrivateRoutes";
 import DashBoardLayout from "../Layouts/DashBoardLayout/DashBoardLayout";
 import MyParcels from "../Pages/DashBoard/MyParcels/MyParcels";
 import ParcelDetails from "../Pages/DashBoard/MyParcels/ParcelDetails";
+import AboutUs from "../AboutUs/AboutUs";
 
 export const router = createBrowserRouter([
   // 1. main layout (Public Pages)
@@ -29,6 +30,10 @@ export const router = createBrowserRouter([
         path: "send-parcel",
         element: <PrivateRoutes><SendParcel /></PrivateRoutes>
       },
+      {
+        path: "aboutUs",
+        Component: AboutUs
+      }
     ]
   },
 
