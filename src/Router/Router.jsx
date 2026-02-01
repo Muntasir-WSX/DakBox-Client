@@ -9,9 +9,10 @@ import SendParcel from "../Pages/SendParcel/SendParcel";
 import PrivateRoutes from "../Routes/PrivateRoutes";
 import DashBoardLayout from "../Layouts/DashBoardLayout/DashBoardLayout";
 import MyParcels from "../Pages/DashBoard/MyParcels/MyParcels";
+import ParcelDetails from "../Pages/DashBoard/MyParcels/ParcelDetails";
 
 export const router = createBrowserRouter([
-  // ১. মেইন ওয়েবসাইট লেআউট (Navbar & Footer থাকবে)
+  // 1. main layout (Public Pages)
   {
     path: "/",
     element: <MainLayout />, 
@@ -31,23 +32,27 @@ export const router = createBrowserRouter([
     ]
   },
 
-  // ২. ড্যাশবোর্ড লেআউট (সম্পূর্ণ আলাদা লেআউট - মেইন নেভবার এখানে আসবে না)
+  // 2. dashbaord layout (User Dashboard)
   {
     path: "dashboard",
     element: <PrivateRoutes><DashBoardLayout /></PrivateRoutes>,
     children: [
       {
         index: true,
-        element: <Navigate to="myparcels" replace /> // /dashboard এ গেলে সরাসরি My Parcels এ নিবে
+        element: <Navigate to="myparcels" replace /> 
       },
       {
         path: 'myparcels',
         element: <MyParcels />
+      },
+      {
+        path:'parcel-details/:id',
+        element: <PrivateRoutes><ParcelDetails /></PrivateRoutes>
       }
     ]
   },
 
-  // ৩. অথেনটিকেশন লেআউট (SignIn/SignUp)
+  // 3. auth layout (SignIn/SignUp)
   {
     path: "/",
     element: <AuthLayout />,
