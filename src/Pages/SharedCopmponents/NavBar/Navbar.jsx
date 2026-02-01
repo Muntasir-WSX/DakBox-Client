@@ -13,37 +13,31 @@ const Navbar = () => {
     .then(() => {
       toast.success("Logged out successfully", {
         icon: '👋',
-        style: {
-          background: "#1F2937",
-          color: "#D9F26B",
-        },
+        style: { background: "#1F2937", color: "#D9F26B" },
       });
     })
-    .catch((error) => {
-      toast.error("Logout failed!");
-      console.log(error);
-    });
+    .catch((error) => console.log(error));
   };
 
   const navLinkStyles = ({ isActive }) =>
-    `transition-colors duration-200 font-medium ${
+    `transition-colors duration-200 font-medium whitespace-nowrap text-[13px] xl:text-sm ${
       isActive ? "text-black font-bold lg:border-b-2 lg:border-black" : "text-gray-500 hover:text-black"
     }`;
 
   const navItems = (
     <>
+      <li><NavLink to="/" className={navLinkStyles}>Home</NavLink></li>
+      {user && (
+        <>
+          <li><NavLink to="/send-parcel" className={navLinkStyles}>Send Parcel</NavLink></li>
+          <li><NavLink to="/dashboard" className={navLinkStyles}>My DashBoard</NavLink></li>
+          <li><NavLink to="/trackorder" className={navLinkStyles}>Track Order</NavLink></li>
+        </>
+      )}
       <li><NavLink to="/services" className={navLinkStyles}>Services</NavLink></li>
       <li><NavLink to="/coverage" className={navLinkStyles}>Coverage</NavLink></li>
+      <li><NavLink to="/contact" className={navLinkStyles}>Be a Rider</NavLink></li>
       <li><NavLink to="/about" className={navLinkStyles}>About Us</NavLink></li>
-      {
-        user && <> 
-        <li><NavLink to="/dashboard" className={navLinkStyles}>My DashBoard</NavLink></li>
-        <li><NavLink to="/send-parcel" className={navLinkStyles}>Send Parcel</NavLink></li> 
-        <li><NavLink to="/pricing" className={navLinkStyles}>Pricing</NavLink></li>
-        <li><NavLink to="/trackorder" className={navLinkStyles}>Track Order</NavLink></li>
-        <li><NavLink to="/contact" className={navLinkStyles}>Be a Rider</NavLink></li>
-        </>
-      }
     </>
   );
 
@@ -53,72 +47,68 @@ const Navbar = () => {
         <input id="my-drawer" type="checkbox" className="drawer-toggle" />
         
         <div className="drawer-content flex flex-col">
-          <div className="navbar bg-white border border-gray-100 rounded-full px-6 py-2 shadow-sm">
+          <div className="navbar bg-white border border-gray-100 rounded-full px-4 xl:px-8 py-2 shadow-sm flex items-center justify-between min-h-16">
             
-            <div className="navbar-start">
-              <label htmlFor="my-drawer" className="btn btn-ghost lg:hidden p-0 mr-2 min-h-0 h-auto">
+            {/* Start: Logo Section */}
+            <div className="shrink-0 flex items-center gap-2">
+              <label htmlFor="my-drawer" className="btn btn-ghost lg:hidden p-0 min-h-0 h-auto">
                 <Menu size={24} className="text-gray-600" />
               </label>
               <DakBox />
             </div>
 
-            <div className="navbar-center hidden lg:flex">
-              <ul className="menu menu-horizontal px-1 gap-6 text-sm">
+            {/* Center: Menu Section  */}
+            <div className="hidden lg:flex grow justify-center px-4 overflow-hidden">
+              <ul className="menu menu-horizontal gap-1 xl:gap-4 flex-nowrap">
                 {navItems}
               </ul>
             </div>
 
-            <div className="navbar-end gap-3">
+            {/* End: Auth Section */}
+            <div className="shrink-0 flex items-center gap-2">
               {user ? (
-                <div className="flex items-center gap-3">
-                  {/* User Profile Image with Tooltip (Email on Hover) */}
+                <div className="flex items-center gap-2 xl:gap-3">
                   <div className="tooltip tooltip-bottom lowercase" data-tip={user?.email}>
                     <div className="avatar online cursor-pointer">
-                      <div className="w-10 h-10 rounded-full border-2 border-[#D9F26B]">
+                      <div className="w-9 h-9 xl:w-10 xl:h-10 rounded-full border-2 border-[#D9F26B]">
                         <img 
-                          src={user?.photoURL || "https://ui-avatars.com/api/?name="} 
+                          src={user?.photoURL || "https://ui-avatars.com/api/?name=User"} 
                           alt="User Profile" 
                         />
                       </div>
                     </div>
                   </div>
 
-                  {/* Logout Button */}
                   <button 
                     onClick={handleLogOut}
-                    className="btn bg-red-50 hover:bg-red-100 text-red-600 border border-red-100 rounded-full px-4 h-10 min-h-0 transition-all flex items-center gap-2"
+                    className="btn bg-red-50 hover:bg-red-100 text-red-600 border border-red-100 rounded-full px-3 xl:px-4 h-9 xl:h-10 min-h-0 flex items-center gap-2"
                   >
-                    <span className="font-extrabold text-xs uppercase hidden md:block">Logout</span>
+                    <span className="font-extrabold text-[10px] xl:text-xs uppercase hidden xl:block">Logout</span>
                     <LogOut size={16} />
                   </button>
                 </div>
               ) : (
                 <div className="flex gap-2">
-                  <NavLink to="/signin" className="btn bg-gray-50 hover:bg-gray-200 border border-gray-100 rounded-full px-4 md:px-5 flex items-center gap-2 group h-10 min-h-0">
-                    <span className="font-bold text-black text-[10px] md:text-sm uppercase tracking-tight">Sign In</span>
-                    <div className="bg-black text-white rounded-full p-1 transition-transform group-hover:rotate-45 hidden sm:block">
-                      <MoveUpRight size={12} />
-                    </div>
+                  <NavLink to="/signin" className="btn bg-gray-50 border border-gray-100 rounded-full px-4 h-9 xl:h-10 min-h-0 flex items-center gap-2 group">
+                    <span className="font-bold text-black text-[11px] xl:text-sm uppercase">Sign In</span>
+                    <MoveUpRight size={14} className="group-hover:rotate-45 transition-transform hidden xl:block" />
                   </NavLink>
 
-                  <NavLink to="/signup" className="btn bg-[#D9F26B] hover:bg-[#c4db59] border-none rounded-full px-4 md:px-5 flex items-center gap-2 group h-10 min-h-0">
-                    <span className="font-bold text-black text-[10px] md:text-sm uppercase tracking-tight">Sign Up</span>
-                    <div className="bg-black text-[#D9F26B] rounded-full p-1 transition-transform group-hover:rotate-45 hidden sm:block">
-                      <MoveUpRight size={12} />
-                    </div>
+                  <NavLink to="/signup" className="btn bg-[#D9F26B] border-none rounded-full px-4 h-9 xl:h-10 min-h-0 flex items-center gap-2">
+                    <span className="font-bold text-black text-[11px] xl:text-sm uppercase">Sign Up</span>
                   </NavLink>
                 </div>
               )}
             </div>
+
           </div>
         </div>
 
+        {/* Sidebar for Mobile */}
         <div className="drawer-side">
-          <label htmlFor="my-drawer" aria-label="close sidebar" className="drawer-overlay"></label>
+          <label htmlFor="my-drawer" className="drawer-overlay"></label>
           <ul className="menu p-6 w-80 min-h-full bg-white text-base-content space-y-4 pt-10">
-            <div className="mb-8 px-4">
-              <DakBox />
-            </div>
+            <div className="mb-8 px-4"><DakBox /></div>
             {navItems}
           </ul>
         </div>
