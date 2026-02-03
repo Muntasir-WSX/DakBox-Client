@@ -1,92 +1,172 @@
-import React from 'react';
-import useAuth from '../../../Hooks/useAuth';
+import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import useAxiosSecure from '../../../Hooks/useAxiosSecure';
 import Loading from '../../SharedCopmponents/Loading/Loading';
-import { CreditCard, Calendar, Hash, Package, CheckCircle } from 'lucide-react';
+import toast from 'react-hot-toast';
+import { CheckCircle, AlertCircle, ShieldCheck } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 
-const PaymentHistory = () => {
-    const { user } = useAuth();
+const PaymentForm = () => {
+    const stripe = useStripe();
+    const elements = useElements();
+    const [cardError, setCardError] = useState('');
+    const [clientSecret, setClientSecret] = useState('');
+    const [processing, setProcessing] = useState(false);
+    const { parcelid } = useParams();
+    const navigate = useNavigate();
     const axiosSecure = useAxiosSecure();
 
-    const { isPending, data: payments = [] } = useQuery({
-        queryKey: ['payments', user?.email],
-        enabled: !!user?.email,
+    const { data: parcel, isLoading } = useQuery({
+        queryKey: ['parcel', parcelid],
+        enabled: !!parcelid,
         queryFn: async () => {
-            const res = await axiosSecure.get(`/payment-history?email=${user?.email}`);
+            const res = await axiosSecure.get(`/parcel/${parcelid}`);
             return res.data;
         }
     });
 
-    if (isPending) return <Loading />;
+    useEffect(() => {
+        const price = parseFloat(parcel?.totalCharge);
+        if (price > 0 && !clientSecret && parcel?.status !== 'paid') {
+            axiosSecure.post('/create-payment-intent', { price })
+                .then(res => {
+                    setClientSecret(res.data.clientSecret);
+                })
+                .catch(err => console.error("Stripe Error:", err));
+        }
+    }, [parcel?.totalCharge, clientSecret, axiosSecure, parcel?.status]);
+
+    if (isLoading) return <Loading />;
+
+    // Already Paid State
+    if (parcel?.status === 'paid') {
+        return (
+            <div className="flex items-center justify-center min-h-[60vh]">
+                <div className="w-full max-w-md p-10 bg-white rounded-[40px] shadow-2xl text-center border border-gray-100">
+                    <div className="flex justify-center mb-6 text-green-500">
+                        <CheckCircle size={80} strokeWidth={1.5} />
+                    </div>
+                    <h2 className="text-[#0D2A38] text-3xl font-black uppercase tracking-tight mb-2">Already Paid!</h2>
+                    <p className="text-gray-500 font-medium mb-8">This transaction is already completed.</p>
+                    <button 
+                        onClick={() => navigate('/dashboard/myparcels')}
+                        className="w-full bg-[#0D2A38] text-[#D9F26B] font-black py-4 rounded-2xl uppercase tracking-widest hover:scale-105 transition-all"
+                    >
+                        Back to My Parcels
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (!stripe || !elements || !clientSecret || processing) return;
+        setProcessing(true);
+        setCardError('');
+        const card = elements.getElement(CardElement);
+        if (card == null) return;
+
+        const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+            payment_method: {
+                card: card,
+                billing_details: {
+                    name: parcel?.userName || 'Anonymous',
+                    email: parcel?.userEmail || 'unknown',
+                },
+            },
+        });
+
+        if (error) {
+            setCardError(error.message);
+            setProcessing(false);
+        } else if (paymentIntent.status === 'succeeded') {
+            const paymentInfo = { transactionId: paymentIntent.id };
+            try {
+                const res = await axiosSecure.patch(`/parcel/payment-success/${parcelid}`, paymentInfo);
+                if (res.data.success) {
+                    toast.success("Payment successful! Redirecting...");
+                    setTimeout(() => navigate('/dashboard/myparcels'), 1500);
+                }
+            } catch (err) {
+                toast.error("Database sync failed!");
+            } finally {
+                setProcessing(false);
+            }
+        }
+    };
 
     return (
         <div className="p-8 font-urbanist min-h-screen bg-gray-50">
             <Helmet>
-                <title>DakBox | Payment History</title>
+                <title>DakBox | Secure Payment</title>
             </Helmet>
-            <div className="max-w-6xl mx-auto">
-                <div className="mb-8">
+
+            <div className="max-w-4xl mx-auto">
+                {/* 🎨 History Style Header */}
+                <div className="mb-12">
                     <h2 className="text-3xl font-black text-[#0D2A38] uppercase tracking-tight">
-                        Payment <span className="text-[#D9F26B] bg-[#0D2A38] px-2 rounded">History</span>
+                        Secure <span className="text-[#D9F26B] bg-[#0D2A38] px-2 rounded">Payment</span>
                     </h2>
-                    <p className="text-gray-500 mt-2 font-medium">Tracking all your successful transactions at DakBox.</p>
+                    <p className="text-gray-500 mt-2 font-medium">Complete your transaction to process the parcel.</p>
                 </div>
 
-                <div className="bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100">
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left border-collapse">
-                            <thead>
-                                <tr className="bg-[#0D2A38] text-[#D9F26B] uppercase text-xs tracking-[0.2em] font-black">
-                                    <th className="p-5 flex items-center gap-2"><Hash size={14} /> Transaction ID</th>
-                                    <th className="p-5"><Package size={14} className="inline mr-2" /> Type</th>
-                                    <th className="p-5 text-right"><CreditCard size={14} className="inline mr-2" /> Amount</th>
-                                    <th className="p-5 text-center">Status</th>
-                                    <th className="p-5 text-center"><Calendar size={14} className="inline mr-2" /> Date</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-50">
-                                {payments.length > 0 ? (
-                                    payments.map((payment) => (
-                                        <tr key={payment._id} className="hover:bg-gray-50 transition-colors group">
-                                            <td className="p-5">
-                                                <span className="font-mono text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-full group-hover:bg-[#D9F26B]/20 transition-colors">
-                                                    {payment.transactionId}
-                                                </span>
-                                            </td>
-                                            <td className="p-5 font-bold text-[#0D2A38]">
-                                                {payment.parcelType}
-                                            </td>
-                                            <td className="p-5 text-right font-black text-[#0D2A38] text-lg">
-                                                ৳{payment.amount}
-                                            </td>
-                                            <td className="p-5 text-center">
-                                                <span className="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-green-600 bg-green-100 px-3 py-1 rounded-full">
-                                                    <CheckCircle size={12} /> Success
-                                                </span>
-                                            </td>
-                                            <td className="p-5 text-center text-gray-500 font-medium text-sm">
-                                                {new Date(payment.paymentDate).toLocaleDateString('en-GB', {
-                                                    day: '2-digit',
-                                                    month: 'short',
-                                                    year: 'numeric'
-                                                })}
-                                            </td>
-                                        </tr>
-                                    ))
-                                ) : (
-                                    <tr>
-                                        <td colSpan="5" className="p-20 text-center">
-                                            <div className="flex flex-col items-center opacity-30">
-                                                <CreditCard size={60} />
-                                                <p className="mt-4 font-bold uppercase tracking-widest">No Payments Found</p>
-                                            </div>
-                                        </td>
-                                    </tr>
+                <div className="grid md:grid-cols-2 gap-8 items-start">
+                    {/* Summary Card */}
+                    <div className="bg-[#0D2A38] p-8 rounded-[40px] text-white shadow-2xl">
+                        <div className="flex items-center gap-3 mb-8">
+                            <ShieldCheck className="text-[#D9F26B]" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] opacity-70">Checkout Summary</span>
+                        </div>
+                        <div className="space-y-6">
+                            <div>
+                                <p className="text-gray-400 text-xs uppercase font-bold tracking-widest">Parcel Type</p>
+                                <h4 className="text-xl font-bold">{parcel?.parcelType}</h4>
+                            </div>
+                            <div className="pt-6 border-t border-white/10">
+                                <p className="text-gray-400 text-xs uppercase font-bold tracking-widest">Payable Amount</p>
+                                <h2 className="text-[#D9F26B] text-5xl font-black italic mt-2">৳{parcel?.totalCharge}</h2>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Stripe Card Input */}
+                    <div className="bg-white p-8 rounded-[40px] shadow-xl border border-gray-100">
+                        <form onSubmit={handleSubmit} className="space-y-8">
+                            <div>
+                                <label className="block text-[#0D2A38] text-[10px] font-black uppercase mb-4 tracking-[0.2em] opacity-50">
+                                    Card Information
+                                </label>
+                                <div className="p-4 border-2 border-gray-100 rounded-2xl bg-gray-50 focus-within:border-[#D9F26B] transition-all">
+                                    <CardElement
+                                        options={{
+                                            style: {
+                                                base: { fontSize: '16px', color: '#0D2A38', fontFamily: 'Urbanist, sans-serif' },
+                                                invalid: { color: '#EF4444' },
+                                            },
+                                        }}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="space-y-4">
+                                <button
+                                    type="submit"
+                                    disabled={!stripe || !clientSecret || processing}
+                                    className="w-full bg-[#0D2A38] text-[#D9F26B] font-black py-5 rounded-2xl uppercase tracking-[0.2em] text-xs shadow-xl active:scale-95 transition-all disabled:opacity-20"
+                                >
+                                    {processing ? "Verifying..." : "Confirm & Pay"}
+                                </button>
+                                {cardError && (
+                                    <div className="flex items-center gap-2 text-red-500 bg-red-50 p-3 rounded-xl">
+                                        <AlertCircle size={16} />
+                                        <p className="text-[10px] font-bold uppercase">{cardError}</p>
+                                    </div>
                                 )}
-                            </tbody>
-                        </table>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -94,4 +174,4 @@ const PaymentHistory = () => {
     );
 };
 
-export default PaymentHistory;
+export default PaymentForm;

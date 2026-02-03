@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import useAxiosSecure from '../../../Hooks/useAxiosSecure';
 import Loading from '../../SharedCopmponents/Loading/Loading';
 import toast from 'react-hot-toast';
+import { CheckCircle, AlertCircle } from 'lucide-react';
 
 const PaymentForm = () => {
     const stripe = useStripe();
@@ -23,16 +24,37 @@ const PaymentForm = () => {
             return res.data;
         }
     });
+
+    
     useEffect(() => {
         const price = parseFloat(parcel?.totalCharge);
-        if (price > 0 && !clientSecret) {
+        if (price > 0 && !clientSecret && parcel?.status !== 'paid') {
             axiosSecure.post('/create-payment-intent', { price })
                 .then(res => {
                     setClientSecret(res.data.clientSecret);
                 })
                 .catch(err => console.error("Stripe Error:", err));
         }
-    }, [parcel?.totalCharge, clientSecret, axiosSecure, ]);
+    }, [parcel?.totalCharge, clientSecret, axiosSecure, parcel?.status]);
+
+   
+    if (parcel?.status === 'paid') {
+        return (
+            <div className="w-full max-w-md mx-auto mt-20 p-10 bg-[#0D2A38] rounded-[40px] shadow-2xl text-center border border-[#D9F26B]/20">
+                <div className="flex justify-center mb-6 text-[#D9F26B]">
+                    <CheckCircle size={80} strokeWidth={1.5} />
+                </div>
+                <h2 className="text-white text-3xl font-black uppercase tracking-tight mb-2">Already Paid!</h2>
+                <p className="text-gray-400 font-medium mb-8">This parcel transaction was completed successfully. No further action needed.</p>
+                <button 
+                    onClick={() => navigate('/dashboard/myparcels')}
+                    className="w-full bg-[#D9F26B] text-[#0D2A38] font-black py-4 rounded-2xl uppercase tracking-widest hover:scale-105 transition-transform"
+                >
+                    Back to My Parcels
+                </button>
+            </div>
+        );
+    }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -43,6 +65,7 @@ const PaymentForm = () => {
         
         const card = elements.getElement(CardElement);
         if (card == null) return;
+
         const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
             payment_method: {
                 card: card,
@@ -60,22 +83,22 @@ const PaymentForm = () => {
             if (paymentIntent.status === 'succeeded') {
                 const paymentInfo = { transactionId: paymentIntent.id };
                 try {
-                   
                     const res = await axiosSecure.patch(`/parcel/payment-success/${parcelid}`, paymentInfo);
                     
-                    if (res.data.updateResult.modifiedCount > 0) {
-                        toast.success("Payment successful! Your parcel is ready to ship.", {
-                            style: { 
-                                background: "#1F2937", 
-                                color: "#D9F26B", 
-                                border: "1px solid #D9F26B" 
-                            },
+                    if (res.data.success) {
+                       
+                        toast.success("Payment successful! Redirecting...", {
+                            duration: 4000,
                         });
-                        navigate('/dashboard/myparcels');
+
+                       
+                        setTimeout(() => {
+                            navigate('/dashboard/myparcels');
+                        }, 1500);
                     }
                 } catch (err) {
                     console.error("Database Update Error:", err);
-                    toast.error("Payment successful but database update failed.");
+                    toast.error("Database sync failed!");
                 } finally {
                     setProcessing(false);
                 }
@@ -87,40 +110,39 @@ const PaymentForm = () => {
 
     return (
         <div className="w-full max-w-md mx-auto mt-16 font-urbanist px-4">
-           
-            <div className="bg-[#0D2A38] rounded-4xl overflow-hidden shadow-2xl transition-all duration-300">
+            <div className="bg-[#0D2A38] rounded-[40px] overflow-hidden shadow-2xl border border-white/5">
                 
-                
-                <div className="p-8 pb-12">
-                    <div className="flex justify-between items-center mb-6">
-                        <h3 className="text-white text-2xl font-black uppercase tracking-wider">DakBox Payment</h3>
-                        <div className="bg-[#D9F26B]/20 px-3 py-1 rounded-full border border-[#D9F26B]/30">
-                            <span className="text-[#D9F26B] text-[10px] font-black uppercase tracking-widest">Secure SSL</span>
+                {/* Header Area */}
+                <div className="p-8 pb-10">
+                    <div className="flex justify-between items-center mb-8">
+                        <h3 className="text-white text-xl font-black uppercase tracking-widest">DakBox Payment</h3>
+                        <div className="bg-white/10 px-3 py-1 rounded-full border border-white/10 flex items-center gap-2">
+                            <div className="w-2 h-2 bg-[#D9F26B] rounded-full animate-pulse"></div>
+                            <span className="text-[#D9F26B] text-[10px] font-black uppercase tracking-widest">Live</span>
                         </div>
                     </div>
                     <div className="space-y-1">
-                        <p className="text-gray-400 text-sm font-medium">Payable Amount</p>
-                        <h2 className="text-[#D9F26B] text-4xl font-black">৳{parcel?.totalCharge || 0}</h2>
+                        <p className="text-gray-400 text-xs font-bold uppercase tracking-widest opacity-60">Total Payable</p>
+                        <h2 className="text-[#D9F26B] text-5xl font-black italic">৳{parcel?.totalCharge || 0}</h2>
                     </div>
                 </div>
 
                 {/* Form Section */}
-                <div className="bg-white m-2 rounded-[28px] p-8">
+                <div className="bg-white m-2 rounded-4xl p-8">
                     <form onSubmit={handleSubmit} className="space-y-8">
                         <div>
-                            <label className="block text-[#0D2A38] text-xs font-bold uppercase mb-4 tracking-widest opacity-70">
-                                Credit or Debit Card
+                            <label className="block text-[#0D2A38] text-[10px] font-black uppercase mb-4 tracking-[0.2em] opacity-50">
+                                Card Details
                             </label>
-                            <div className="p-4 border-2 border-gray-100 rounded-2xl bg-gray-50 focus-within:border-[#D9F26B] focus-within:ring-4 focus-within:ring-[#D9F26B]/10 transition-all duration-300">
+                            <div className="p-4 border-2 border-gray-100 rounded-2xl bg-gray-50 focus-within:border-[#D9F26B] transition-all duration-300">
                                 <CardElement
                                     options={{
                                         style: {
                                             base: {
-                                                fontSize: '17px',
-                                                fontFamily: 'Urbanist, sans-serif',
+                                                fontSize: '16px',
                                                 color: '#0D2A38',
-                                                letterSpacing: '0.025em',
-                                                '::placeholder': { color: '#9CA3AF' },
+                                                fontFamily: 'Urbanist, sans-serif',
+                                                '::placeholder': { color: '#A1A1AA' },
                                             },
                                             invalid: { color: '#EF4444' },
                                         },
@@ -133,37 +155,28 @@ const PaymentForm = () => {
                             <button
                                 type="submit"
                                 disabled={!stripe || !clientSecret || processing}
-                                className="w-full bg-[#0D2A38] hover:bg-[#163a4d] text-[#D9F26B] font-black py-5 rounded-2xl uppercase tracking-[0.2em] text-sm shadow-xl shadow-[#0D2A38]/20 active:scale-[0.98] transition-all disabled:bg-gray-200 disabled:text-gray-400 disabled:shadow-none"
+                                className="w-full bg-[#0D2A38] text-[#D9F26B] font-black py-5 rounded-2xl uppercase tracking-[0.2em] text-xs shadow-xl active:scale-95 transition-all disabled:opacity-20"
                             >
-                                {processing ? (
-                                    <span className="flex items-center justify-center gap-3">
-                                        <span className="w-4 h-4 border-2 border-t-transparent border-[#D9F26B] rounded-full animate-spin"></span>
-                                        Processing...
-                                    </span>
-                                ) : "Confirm Payment"}
+                                {processing ? "Verifying..." : "Confirm & Pay"}
                             </button>
                             
                             {cardError && (
-                                <div className="bg-red-50 border-l-4 border-red-500 p-3 rounded-r-lg">
-                                    <p className="text-red-500 text-xs font-bold italic">
-                                        {cardError}
-                                    </p>
+                                <div className="flex items-center gap-2 text-red-500 bg-red-50 p-3 rounded-xl border-l-4 border-red-500">
+                                    <AlertCircle size={16} />
+                                    <p className="text-[10px] font-bold uppercase">{cardError}</p>
                                 </div>
                             )}
                         </div>
                     </form>
                     
-                    {/* Trust Signals */}
-                    <div className="mt-8 pt-6 border-t border-gray-100 flex justify-center gap-8 opacity-40 grayscale hover:grayscale-0 transition-all duration-500">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" className="h-4" alt="visa" />
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" className="h-6" alt="mastercard" />
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/b/ba/Stripe_Logo%2C_revised_2016.svg" className="h-5" alt="stripe" />
+                    <div className="mt-8 flex justify-center gap-6 opacity-30 grayscale pointer-events-none">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" className="h-3" alt="visa" />
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" className="h-5" alt="mastercard" />
                     </div>
                 </div>
             </div>
-            
-            <p className="text-center mt-6 text-gray-400 text-xs font-medium uppercase tracking-widest">
-                Encrypted & Secured by Stripe
+            <p className="text-center mt-6 text-gray-400 text-[10px] font-black uppercase tracking-[0.3em]">
+                Secured by Stripe Terminal
             </p>
         </div>
     );
