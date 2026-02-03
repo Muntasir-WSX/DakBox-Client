@@ -81,7 +81,7 @@ const PaymentForm = () => {
             setProcessing(false);
         } else {
             if (paymentIntent.status === 'succeeded') {
-                const paymentInfo = { transactionId: paymentIntent.id };
+                const paymentInfo = { transactionId: paymentIntent.id,tracingId: parcel?.tracingId};
                 try {
                     const res = await axiosSecure.patch(`/parcel/payment-success/${parcelid}`, paymentInfo);
                     
