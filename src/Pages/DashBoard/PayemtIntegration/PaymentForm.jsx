@@ -25,14 +25,14 @@ const PaymentForm = () => {
     });
     useEffect(() => {
         const price = parseFloat(parcel?.totalCharge);
-        if (price > 0) {
+        if (price > 0 && !clientSecret) {
             axiosSecure.post('/create-payment-intent', { price })
                 .then(res => {
                     setClientSecret(res.data.clientSecret);
                 })
                 .catch(err => console.error("Stripe Error:", err));
         }
-    }, [axiosSecure, parcel?.totalCharge]);
+    }, [parcel?.totalCharge, clientSecret, axiosSecure, ]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -63,7 +63,7 @@ const PaymentForm = () => {
                    
                     const res = await axiosSecure.patch(`/parcel/payment-success/${parcelid}`, paymentInfo);
                     
-                    if (res.data.modifiedCount > 0) {
+                    if (res.data.updateResult.modifiedCount > 0) {
                         toast.success("Payment successful! Your parcel is ready to ship.", {
                             style: { 
                                 background: "#1F2937", 
