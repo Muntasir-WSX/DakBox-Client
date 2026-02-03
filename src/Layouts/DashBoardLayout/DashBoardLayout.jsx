@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, Outlet } from 'react-router';
 import DakBox from '../../Pages/SharedCopmponents/DakBoxLogo/DakBox';
-import { Home, Package, PlusCircle } from 'lucide-react';
+import { History, Home, Package, PlusCircle, TrainTrack, TruckIcon, UserCog } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 
 const DashBoardLayout = () => {
@@ -50,6 +50,23 @@ const DashBoardLayout = () => {
                             <PlusCircle size={22} /> <span>Send Parcel</span>
                         </Link>
                     </li>
+                    
+                        <li>
+                            <Link to="/dashboard/payment-history" className="flex items-center gap-3 text-lg font-semibold hover:bg-white/10 rounded-xl py-3 px-5 transition-all active:scale-95">
+                                <History size={22} /> <span>My Payment History</span>
+                            </Link>
+                        </li>
+                        <li>
+                            <Link to="/dashboard/track-package" className="flex items-center gap-3 text-lg font-semibold hover:bg-white/10 rounded-xl py-3 px-5 transition-all active:scale-95">
+                                <TruckIcon size={22} /> <span>Track A Package</span>
+                            </Link>
+                        </li>
+                        <li>
+                            <Link to="/dashboard/my-profile" className="flex items-center gap-3 text-lg font-semibold hover:bg-white/10 rounded-xl py-3 px-5 transition-all active:scale-95">
+                                <UserCog size={22} /> <span>MY Profile</span>
+                            </Link>
+                        </li>
+                    
                     <div className="pt-10">
                         <li>
                             <Link to="/" className="flex items-center gap-3 text-lg font-semibold text-[#D4E96D] border border-[#D4E96D]/30 hover:bg-[#D4E96D] hover:text-[#0D2A38] rounded-xl py-3 px-5 transition-all">

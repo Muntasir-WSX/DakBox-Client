@@ -12,6 +12,9 @@ import MyParcels from "../Pages/DashBoard/MyParcels/MyParcels";
 import ParcelDetails from "../Pages/DashBoard/MyParcels/ParcelDetails";
 import AboutUs from "../Pages/AboutUs/AboutUs";
 import Payment from "../Pages/DashBoard/PayemtIntegration/Payment";
+import PaymentHistory from "../Pages/DashBoard/PaymentHistory/PaymentHistory";
+import TrackPackage from "../Pages/DashBoard/TrackPackage/TrackPackage";
+import MYProfile from "../Pages/DashBoard/MYProfile/MYProfile";
 
 
 export const router = createBrowserRouter([
@@ -59,6 +62,18 @@ export const router = createBrowserRouter([
       {
         path: 'payment/:parcelid',
         Component: Payment
+      },
+      {
+        path: 'payment-history',
+        Component: PaymentHistory
+      },
+      {
+        path: 'track-package',
+        Component:TrackPackage
+      },
+      {
+        path: 'my-profile',
+        Component:MYProfile
       }
     ]
   },
