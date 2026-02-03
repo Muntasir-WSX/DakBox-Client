@@ -20,7 +20,7 @@ createRoot(document.getElementById("root")).render(
         <QueryClientProvider client={queryClient}>
           <AuthProvider>
             <Toaster
-              position="top-center"
+              position="top-right"
               reverseOrder={false}
               toastOptions={{
                 duration: 4000,

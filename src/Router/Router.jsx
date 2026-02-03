@@ -57,7 +57,7 @@ export const router = createBrowserRouter([
         Component: ParcelDetails
       },
       {
-        path: 'payment/:id',
+        path: 'payment/:parcelid',
         Component: Payment
       }
     ]
