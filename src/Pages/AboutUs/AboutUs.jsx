@@ -51,7 +51,7 @@ const AboutUs = () => {
       {/* Header Section */}
        <Helmet>
               <title>DakBox | About Us</title>
-            </Helmet>
+       </Helmet>
       <div className="flex flex-col font-urbanist md:flex-row justify-between items-start md:items-center mb-10 gap-4">
         <div>
           <h2 className="text-5xl  font-black text-[#0D2A38] mb-3 tracking-tighter uppercase">

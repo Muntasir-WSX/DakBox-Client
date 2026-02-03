@@ -5,7 +5,7 @@ import useAxiosSecure from '../../../Hooks/useAxiosSecure';
 import { Eye, Trash2, PackageCheck, CreditCard } from 'lucide-react';
 import Loading from '../../SharedCopmponents/Loading/Loading';
 import Swal from 'sweetalert2';
-import { Link } from 'react-router-dom'; 
+import { Link, useNavigate } from 'react-router-dom'; 
 import { Helmet } from 'react-helmet-async';
 
 const MyParcels = () => {
@@ -35,6 +35,8 @@ const MyParcels = () => {
         }
     });
 
+    const navigate = useNavigate();
+
     // handler for delete action
     const handleDelete = (id) => {
         Swal.fire({
@@ -51,6 +53,10 @@ const MyParcels = () => {
             }
         });
     };
+
+    const handlePay = (id) => {
+        navigate(`/dashboard/payment/${id}`);
+    }
 
     // ৩. conditional loading state
     if (isLoading) return <Loading />;
@@ -133,9 +139,9 @@ const MyParcels = () => {
                                         <Link to={`/dashboard/parcel-details/${item._id}`} className="p-2 hover:bg-[#0D2A38] hover:text-white text-[#0D2A38] rounded-xl transition-all border border-gray-200 shadow-sm" title="View Details">
                                             <Eye size={16} />
                                         </Link>
-                                        <button className="p-2 hover:bg-green-600 hover:text-white text-green-600 rounded-xl transition-all border border-gray-200 shadow-sm" title="Pay Now">
+                                        <Link to={`/dashboard/payment/${item._id}`} className="p-2 hover:bg-green-600 hover:text-white text-green-600 rounded-xl transition-all border border-gray-200 shadow-sm" title="Pay Now">
                                             <CreditCard size={16} />
-                                        </button>
+                                        </Link>
                                         <button 
                                             onClick={() => handleDelete(item._id)} 
                                             disabled={item.status !== 'pending'} 
