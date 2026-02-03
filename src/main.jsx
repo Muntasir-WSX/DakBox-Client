@@ -15,7 +15,6 @@ Aos.init();
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <div className='font-urbanist max-w-auto mx-auto'>
-      {/* এখন QueryClientProvider কাজ করবে */}
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <Toaster

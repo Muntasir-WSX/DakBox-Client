@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { tabContents } from "../../data/aboutData"; 
+import { tabContents } from "../../../data/aboutData"; 
 import { History, Target, Trophy, Users} from "lucide-react";
 
 const AboutUs = () => {
@@ -126,7 +126,7 @@ const AboutUs = () => {
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-10">
                   <div className="p-8 bg-gray-50 rounded-3xl border-l-4 border-[#6B7C11] shadow-sm">
-                    <p className="text-sm text-gray-500 font-urbanist ">" Delivering excellence across Bangladesh with every parcel we handle. "</p>
+                    <p className="text-sm text-gray-500 font-urbanist ">"Delivering excellence across Bangladesh with every parcel we handle."</p>
                   </div>
                   <div className="p-8 bg-[#D9F26B]/10 rounded-3xl border-l-4 border-[#D9F26B] shadow-sm">
                     <p className="text-sm text-gray-800 font-extrabold uppercase tracking-tighter font-urbanist">Fast. Secure. Reliable.</p>

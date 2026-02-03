@@ -10,7 +10,8 @@ import PrivateRoutes from "../Routes/PrivateRoutes";
 import DashBoardLayout from "../Layouts/DashBoardLayout/DashBoardLayout";
 import MyParcels from "../Pages/DashBoard/MyParcels/MyParcels";
 import ParcelDetails from "../Pages/DashBoard/MyParcels/ParcelDetails";
-import AboutUs from "../AboutUs/AboutUs";
+import AboutUs from "../Pages/AboutUs/AboutUs";
+
 
 export const router = createBrowserRouter([
   // 1. main layout (Public Pages)

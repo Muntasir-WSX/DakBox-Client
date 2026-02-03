@@ -1,54 +1,44 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import { FcGoogle } from "react-icons/fc";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom"; // useLocation যোগ করা হয়েছে
 import useAuth from "../../../Hooks/useAuth";
-import toast from "react-hot-toast"; // SweetAlert বদলে এটি ব্যবহার করুন
+import toast from "react-hot-toast";
 
 const SignIn = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
   const { signIn, signInWithGoogle } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+ 
+  const from = location.state?.from?.pathname || "/";
 
   const onSubmit = (data) => {
     signIn(data.email, data.password)
       .then((result) => {
         toast.success("Welcome back!", {
-        style: {
-          background: "#1F2937", // Dark background
-          color: "#D9F26B",      // Lime text
-          border: "1px solid #D9F26B",
-        },
-        iconTheme: {
-          primary: "#D9F26B",
-          secondary: "#1F2937",
-        },
-      });
-        navigate("/");
+          style: { background: "#1F2937", color: "#D9F26B", border: "1px solid #D9F26B" },
+        });
+        navigate(from, { replace: true }); 
       })
       .catch((error) => {
-      toast.error("Login failed. Check your credentials.", {
-        style: {
-          background: "#FEF2F2", // Light red bg
-          color: "#991B1B",      // Dark red text
-          border: "1px solid #FCA5A5",
-        },
+        toast.error("Login failed. Check your credentials.");
       });
-    });
-};
+  };
 
   const handleGoogleSignIn = () => {
     signInWithGoogle()
       .then((result) => {
         toast.success("Google Sign-in Successful", {
-        style: { background: "#D9F26B", color: "#000" } // Lime bg, Black text
+          style: { background: "#D9F26B", color: "#000" }
+        });
+        navigate(from, { replace: true }); 
+      })
+      .catch((error) => {
+        toast.error(error.message);
       });
-      navigate("/");
-    })
-    .catch((error) => {
-      toast.error(error.message);
-    });
-};
+  };
 
   return (
     <div className="w-full">
