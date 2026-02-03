@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import useAxiosSecure from '../../../Hooks/useAxiosSecure';
 import { ArrowLeft, MapPin, User, Box } from 'lucide-react';
+import { Helmet } from 'react-helmet-async';
 
 const ParcelDetails = () => {
     const { id } = useParams();
@@ -21,6 +22,9 @@ const ParcelDetails = () => {
 
     return (
         <div className="max-w-4xl mx-auto bg-white rounded-3xl p-8 shadow-sm border border-gray-100" style={{ fontFamily: "'Urbanist', sans-serif" }}>
+             <Helmet>
+                    <title>DakBox | Parcel Details</title>
+                  </Helmet>
             <button onClick={() => navigate(-1)} className="mb-6 flex items-center gap-2 text-gray-500 font-bold hover:text-[#0D2A38]">
                 <ArrowLeft size={20} /> Back
             </button>

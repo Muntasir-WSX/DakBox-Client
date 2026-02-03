@@ -10,6 +10,7 @@ import CTA from "./CTA/CTA";
 import Priority from "./Priority/Priority";
 import Review from "./Rivew/Rivew";
 import FAQ from "../../SharedCopmponents/FAQ/FAQ";
+import { Helmet } from "react-helmet-async";
 
 const Home = () => {
   useEffect(() => {
@@ -23,7 +24,10 @@ const Home = () => {
 
   return (
     <div className="overflow-hidden">
-      {/* Protiti section smoothly load hobe */}
+
+      <Helmet>
+        <title>DakBox | Home</title>
+      </Helmet>
       <div data-aos="fade-in">
         <Banner />
       </div>

@@ -2,12 +2,15 @@ import React from 'react';
 import { Link, Outlet } from 'react-router';
 import DakBox from '../../Pages/SharedCopmponents/DakBoxLogo/DakBox';
 import { Home, Package, PlusCircle } from 'lucide-react';
+import { Helmet } from 'react-helmet-async';
 
 const DashBoardLayout = () => {
     return (
         <div className="drawer lg:drawer-open" style={{ fontFamily: "'Urbanist', sans-serif" }}>
             <input id="my-drawer-2" type="checkbox" className="drawer-toggle" />
-            
+             <Helmet>
+                    <title>DakBox | Dashboard</title>
+                  </Helmet>
             <div className="drawer-content flex flex-col bg-gray-50">
                 {/* Mobile Navbar */}
                 <div className="navbar bg-[#0D2A38] text-white w-full lg:hidden border-b border-gray-700">

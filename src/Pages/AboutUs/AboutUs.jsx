@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { tabContents } from "../../../data/aboutData"; 
 import { History, Target, Trophy, Users} from "lucide-react";
+import { Helmet } from "react-helmet-async";
 
 const AboutUs = () => {
   const [activeTab, setActiveTab] = useState("story");
@@ -48,6 +49,9 @@ const AboutUs = () => {
   return (
     <div className="max-w-7xl mx-auto p-6 md:p-12 bg-white rounded-[40px] shadow-sm border border-gray-100 font-urbanist mt-10">
       {/* Header Section */}
+       <Helmet>
+              <title>DakBox | About Us</title>
+            </Helmet>
       <div className="flex flex-col font-urbanist md:flex-row justify-between items-start md:items-center mb-10 gap-4">
         <div>
           <h2 className="text-5xl  font-black text-[#0D2A38] mb-3 tracking-tighter uppercase">

@@ -4,6 +4,7 @@ import { FcGoogle } from "react-icons/fc";
 import { Link, useNavigate, useLocation } from "react-router-dom"; // useLocation যোগ করা হয়েছে
 import useAuth from "../../../Hooks/useAuth";
 import toast from "react-hot-toast";
+import { Helmet } from "react-helmet-async";
 
 const SignIn = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
@@ -42,6 +43,9 @@ const SignIn = () => {
 
   return (
     <div className="w-full">
+       <Helmet>
+              <title>DakBox | Sign In</title>
+            </Helmet>
       <div className="mb-8 mt-4">
         <h1 className="text-4xl font-bold mb-2 text-gray-900">Sign In</h1>
         <p className="text-gray-500 text-sm">Welcome back to DakBox</p>

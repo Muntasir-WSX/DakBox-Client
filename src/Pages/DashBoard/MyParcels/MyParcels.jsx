@@ -6,6 +6,7 @@ import { Eye, Trash2, PackageCheck, CreditCard } from 'lucide-react';
 import Loading from '../../SharedCopmponents/Loading/Loading';
 import Swal from 'sweetalert2';
 import { Link } from 'react-router-dom'; 
+import { Helmet } from 'react-helmet-async';
 
 const MyParcels = () => {
     const { user } = useAuth();
@@ -57,6 +58,9 @@ const MyParcels = () => {
     return (
         <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 font-urbanist">
             <div className="flex justify-between items-center mb-8">
+                 <Helmet>
+                        <title>DakBox | My Parcels</title>
+                      </Helmet>
                 <div>
                     <h2 className="text-3xl font-black text-[#0D2A38] tracking-tight uppercase">My Sent Parcels</h2>
                     <p className="text-sm text-gray-400 font-medium">Manage and track your delivery requests</p>

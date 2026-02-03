@@ -6,6 +6,7 @@ import { warehouseData } from "../../Data/WareHouse";
 import { FormInput, FormSelect, FormTextArea } from "./FormComponents";
 import useAuth from "../../Hooks/useAuth";
 import useAxiosSecure from "../../Hooks/useAxiosSecure";
+import { Helmet } from "react-helmet-async";
 
 const SendParcel = () => {
   const { user } = useAuth();
@@ -103,6 +104,9 @@ const SendParcel = () => {
 
   return (
     <section className="py-12 bg-white min-h-screen px-4 font-sans text-[#0D2A38]">
+       <Helmet>
+              <title>DakBox | Send Parcel</title>
+            </Helmet>
       <Toaster />
       <div className="max-w-6xl mx-auto">
         <header className="mb-8">

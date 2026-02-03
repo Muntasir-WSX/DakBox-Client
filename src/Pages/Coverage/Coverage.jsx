@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import BangladeshMap from './BangladeshMap';
 import SearchBox from './searchBox';
+import { Helmet } from 'react-helmet-async';
 
 
 const Coverage = () => {
@@ -8,6 +9,9 @@ const Coverage = () => {
 
     return (
         <div className='max-w-6xl mx-auto px-4 py-16 bg-white'>
+             <Helmet>
+                    <title>DakBox | Coverage</title>
+                  </Helmet>
             <div className='text-center mb-10'>
                 <h1 className='text-4xl font-extrabold text-[#0D2A38] mb-4'>
                     We are available in 64 districts.

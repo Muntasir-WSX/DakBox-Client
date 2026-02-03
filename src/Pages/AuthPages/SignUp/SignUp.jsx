@@ -4,6 +4,7 @@ import { FcGoogle } from "react-icons/fc";
 import { Link, useNavigate } from "react-router-dom";
 import useAuth from "../../../Hooks/useAuth";
 import toast from "react-hot-toast";
+import { Helmet } from "react-helmet-async";
 
 // ImgBB API Key (এখানে আপনার নিজের কী বসান)
 const img_hosting_key = "YOUR_IMGBB_API_KEY"; 
@@ -60,6 +61,9 @@ const SignUp = () => {
 
   return (
     <div className="w-full">
+       <Helmet>
+              <title>DakBox | Sign Up</title>
+            </Helmet>
       <div className="mb-8">
         <h1 className="text-4xl font-bold mb-2 text-gray-900">Create an Account</h1>
         <p className="text-gray-500 text-sm">Register with DakBox</p>
