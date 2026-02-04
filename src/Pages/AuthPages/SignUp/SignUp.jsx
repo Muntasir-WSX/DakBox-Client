@@ -6,13 +6,16 @@ import useAuth from "../../../Hooks/useAuth";
 import toast from "react-hot-toast";
 import { Helmet } from "react-helmet-async";
 import axios from "axios";
+import UseAxios from "../../../Hooks/UseAxios";
 
 const SignUp = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
   const { createuser, updateUserProfile, signInWithGoogle } = useAuth();
   const navigate = useNavigate();
+  const axiosInstance = UseAxios();
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -23,32 +26,73 @@ const SignUp = () => {
   const onSubmit = async (data) => {
     setLoading(true);
     try {
+      // 1. Upload image to ImgBB first
       let photoURL = "";
       if (data.image && data.image[0]) {
         const formData = new FormData();
         formData.append("image", data.image[0]);
-        
+        // Correct with backticks
         const imageUploadUrl = `https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_Image_Upload_Key}`;
-        
         const res = await axios.post(imageUploadUrl, formData);
         if (res.data.success) {
           photoURL = res.data.data.display_url;
         }
       }
 
+      // 2. Create user in Firebase Authentication
       const result = await createuser(data.email, data.password);
+      
+      // 3. Update Firebase Profile with name and photo
       await updateUserProfile(data.name, photoURL);
 
-      toast.success("Account created successfully!", {
-        style: { background: "#D9F26B", color: "#000", fontWeight: "bold" },
-      });
-      navigate("/");
+      // 4. Save User Data to MongoDB Database (MUST BE INSIDE onSubmit)
+      const userInfo = {
+        name: data.name,
+        email: data.email,
+        photoURL: photoURL,
+        role: "user", // Default role assigned in DB
+        created_at: new Date().toISOString(),
+        last_login: new Date().toISOString()
+      };
+
+      const userRes = await axiosInstance.post('/users', userInfo);
+      
+      // Check if DB insertion was successful
+      if (userRes.data.insertedId || userRes.data.inserted === false) {
+        toast.success("Account created successfully!", {
+          style: { background: "#D9F26B", color: "#000", fontWeight: "bold" },
+        });
+        navigate("/");
+      }
       
     } catch (error) {
-      console.error(error);
+      console.error("Signup Error:", error);
       toast.error(error.message || "Registration failed!");
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Google Sign-In with DB entry
+  const handleGoogleSignUp = async () => {
+    try {
+      const result = await signInWithGoogle();
+      const user = result.user;
+      
+      // Prepare user info for Google users
+      const userInfo = {
+        name: user?.displayName,
+        email: user?.email,
+        photoURL: user?.photoURL,
+        role: "user",
+        created_at: new Date().toISOString()
+      };
+
+      // Post to DB (The backend will handle if user already exists)
+      await axiosInstance.post('/users', userInfo);
+      navigate("/");
+    } catch (error) {
+      toast.error(error.message);
     }
   };
 
@@ -115,7 +159,7 @@ const SignUp = () => {
       </form>
       
       <div className="divider">OR</div>
-      <button onClick={() => signInWithGoogle().then(() => navigate("/"))} className="btn btn-outline w-full flex items-center gap-2 border-gray-300">
+      <button onClick={handleGoogleSignUp} className="btn btn-outline w-full flex items-center gap-2 border-gray-300">
         <FcGoogle size={20} /> Sign up with Google
       </button>
 
