@@ -38,6 +38,7 @@ const SignUp = () => {
           photoURL = res.data.data.display_url;
         }
       }
+      const user = result.user;
 
       // 2. Create user in Firebase Authentication
       const result = await createuser(data.email, data.password);
@@ -75,26 +76,33 @@ const SignUp = () => {
 
   // Google Sign-In with DB entry
   const handleGoogleSignUp = async () => {
-    try {
-      const result = await signInWithGoogle();
-      const user = result.user;
-      
-      // Prepare user info for Google users
-      const userInfo = {
-        name: user?.displayName,
-        email: user?.email,
-        photoURL: user?.photoURL,
-        role: "user",
-        created_at: new Date().toISOString()
-      };
+  try {
+    const result = await signInWithGoogle();
+    const user = result.user;
+    
+    // Prepare user info for DB
+    const userInfo = {
+      name: user?.displayName,
+      email: user?.email,
+      photoURL: user?.photoURL,
+      role: "user",
+      created_at: new Date().toISOString(),
+      last_login: new Date().toISOString()
+    };
 
-      // Post to DB (The backend will handle if user already exists)
-      await axiosInstance.post('/users', userInfo);
+    // Post to DB
+    const res = await axiosInstance.post('/users', userInfo);
+    
+    // logic check: data logic should handle both new and existing users
+    if (res.data.insertedId || res.data.inserted === false) {
+      toast.success("Signed in with Google successfully!");
       navigate("/");
-    } catch (error) {
-      toast.error(error.message);
     }
-  };
+  } catch (error) {
+    console.error("Google Sign-In Error:", error);
+    toast.error(error.message);
+  }
+};
 
   return (
     <div className="w-full">
