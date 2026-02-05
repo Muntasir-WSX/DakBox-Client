@@ -136,7 +136,7 @@ const TrackPackage = () => {
                                 
                                 <div className="relative">
                                     {/* Vertical Line */}
-                                    <div className="absolute left-[11px] top-2 bottom-2 w-0.5 bg-gray-100"></div>
+                                    <div className="absolute left-2.75 top-2 bottom-2 w-0.5 bg-gray-100"></div>
 
                                     <div className="space-y-10">
                                         {updates.length > 0 ? updates.map((update, idx) => (

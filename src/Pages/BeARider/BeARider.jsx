@@ -116,7 +116,7 @@ const BeARider = () => {
                                         }
                                     })} 
                                     className={`input input-bordered w-full bg-gray-50 ${errors.email ? 'border-red-500' : ''}`} 
-                                    placeholder="test@example.com"
+                                    placeholder="yourname@example.com"
                                 />
                                 {errors.email && <span className="text-red-500 text-xs mt-1">{errors.email.message}</span>}
                             </div>

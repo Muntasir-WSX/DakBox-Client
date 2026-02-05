@@ -1,8 +1,9 @@
 import React from 'react';
 import { Link, Outlet } from 'react-router';
 import DakBox from '../../Pages/SharedCopmponents/DakBoxLogo/DakBox';
-import { History, Home, Package, PlusCircle, TrainTrack, TruckIcon, UserCog } from 'lucide-react';
+import { Bike, ClipboardList, History, Home, Package, PlusCircle, TrainTrack, TruckIcon, UserCog } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
+import { FaUserClock } from 'react-icons/fa';
 
 const DashBoardLayout = () => {
     return (
@@ -64,6 +65,16 @@ const DashBoardLayout = () => {
                         <li>
                             <Link to="/dashboard/my-profile" className="flex items-center gap-3 text-lg font-semibold hover:bg-white/10 rounded-xl py-3 px-5 transition-all active:scale-95">
                                 <UserCog size={22} /> <span>MY Profile</span>
+                            </Link>
+                        </li>
+                        <li>
+                            <Link to="/dashboard/active-riders" className="flex items-center gap-3 text-lg font-semibold hover:bg-white/10 rounded-xl py-3 px-5 transition-all active:scale-95">
+                                <Bike size={22} /> <span>Active Riders</span>
+                            </Link>
+                        </li>
+                        <li>
+                            <Link to="/dashboard/pending-riders" className="flex items-center gap-3 text-lg font-semibold hover:bg-white/10 rounded-xl py-3 px-5 transition-all active:scale-95">
+                                <FaUserClock size={22} /> <span>Pending Riders</span>
                             </Link>
                         </li>
                     
