@@ -2,20 +2,24 @@ import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import riderImg from "../../assets/agent-pending.png"; 
 import useAuth from '../../Hooks/useAuth';
+import useAxiosSecure from '../../Hooks/useAxiosSecure';
 import divisions from '../../../data/division.json';
 import warehouses from '../../../data/warehouses.json';
 import { Helmet } from 'react-helmet-async';
+import Swal from 'sweetalert2';
 
 const BeARider = () => {
-    const { user } = useAuth();
+    const { user } = useAuth(); // ছবি বা অন্যান্য ডাটার জন্য রাখলাম
+    const axiosSecure = useAxiosSecure();
     const [filteredDistricts, setFilteredDistricts] = useState([]);
     
-    const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm({
+    const { register, handleSubmit, watch, setValue, reset, formState: { errors } } = useForm({
         defaultValues: {
-            name: user?.displayName || "",
-            email: user?.email || ""
+            name: "", // খালি করে দিলাম যাতে টাইপ করা যায়
+            email: "" // editable করার জন্য default empty
         }
     });
+    
     const selectedRegion = watch("region");
 
     useEffect(() => {
@@ -29,67 +33,113 @@ const BeARider = () => {
         }
     }, [selectedRegion, setValue]);
 
-    const onSubmit = (data) => {
-        console.log("Rider Application Data:", data);
+    const onSubmit = async (data) => {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "Do you want to submit this rider application?",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonColor: "#D4E96D",
+            cancelButtonColor: "#1F2937",
+            confirmButtonText: "Yes, Submit!",
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                const finalData = {
+                    ...data,
+                    status: "pending",
+                    appliedDate: new Date().toISOString(),
+                    // যদি ইউজার লগইন থাকে তবে তার ফটো যাবে, নাহলে ডিফল্ট
+                    userPhoto: user?.photoURL || "https://i.ibb.co/5GzXkwq/user.png" 
+                };
+
+                try {
+                    const res = await axiosSecure.post("/rider-applications", finalData);
+                    
+                    if (res.data.insertedId) {
+                        Swal.fire({
+                            title: "Submitted!",
+                            text: `Application sent for ${data.email}`,
+                            icon: "success",
+                            confirmButtonColor: "#D4E96D",
+                        });
+                        reset(); 
+                    }
+                } catch (error) {
+                    Swal.fire({
+                        title: "Error!",
+                        text: error.response?.data?.message || "Submission failed",
+                        icon: "error",
+                    });
+                }
+            }
+        });
     };
 
     return (
         <div className="max-w-6xl mx-auto p-6 bg-white rounded-3xl shadow-sm mt-10">
+            <Helmet>
+                <title>DakBox | Be A Rider</title>
+            </Helmet>
+            
             <div className="flex flex-col md:flex-row items-center gap-12">
-                
-                <Helmet>
-                        <title>DakBox | Be A Rider</title>
-                      </Helmet>
-                {/* Left Side: Form */}
                 <div className="flex-1 w-full">
                     <h1 className="text-4xl font-bold text-[#0D2A38] mb-2">Be a Rider</h1>
                     <p className="text-gray-500 mb-8">
-                        Enjoy fast, reliable parcel delivery with real-time tracking and zero hassle. 
-                        From personal packages to business shipments — we deliver on time, every time.
+                        Test different accounts by changing the name and email below.
                     </p>
 
-                    <h3 className="text-xl font-semibold mb-6">Tell us about yourself</h3>
+                    <h3 className="text-xl font-semibold mb-6">Application Form</h3>
                     
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {/* Name */}
+                            {/* Name - Now Editable */}
                             <div className="form-control">
-                                <label className="label-text font-medium mb-1">Your Name</label>
+                                <label className="label-text font-medium mb-1">Full Name</label>
                                 <input 
-                                    {...register("name", { required: true })} 
-                                    className="input input-bordered w-full bg-gray-50" 
-                                    placeholder="Your Name"
+                                    {...register("name", { required: "Name is required" })} 
+                                    className={`input input-bordered w-full bg-gray-50 ${errors.name ? 'border-red-500' : ''}`} 
+                                    placeholder="Enter applicant name"
                                 />
+                                {errors.name && <span className="text-red-500 text-xs mt-1">{errors.name.message}</span>}
                             </div>
-                            {/* License */}
+                            
+                            {/* Email - Now Editable */}
                             <div className="form-control">
-                                <label className="label-text font-medium mb-1">Driving License Number</label>
+                                <label className="label-text font-medium mb-1">Email Address</label>
                                 <input 
-                                    {...register("license", { required: "License is required" })} 
-                                    className="input input-bordered w-full bg-gray-50" 
-                                    placeholder="Driving License Number"
+                                    type="email"
+                                    {...register("email", { 
+                                        required: "Email is required",
+                                        pattern: {
+                                            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                                            message: "Invalid email address"
+                                        }
+                                    })} 
+                                    className={`input input-bordered w-full bg-gray-50 ${errors.email ? 'border-red-500' : ''}`} 
+                                    placeholder="test@example.com"
                                 />
+                                {errors.email && <span className="text-red-500 text-xs mt-1">{errors.email.message}</span>}
                             </div>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {/* Email */}
+                            {/* License */}
                             <div className="form-control">
-                                <label className="label-text font-medium mb-1">Your Email</label>
+                                <label className="label-text font-medium mb-1">Driving License</label>
                                 <input 
-                                    {...register("email")} 
-                                    readOnly
-                                    className="input input-bordered w-full bg-gray-100 cursor-not-allowed" 
+                                    {...register("license", { required: "License is required" })} 
+                                    className="input input-bordered w-full bg-gray-50" 
+                                    placeholder="DL-123456"
                                 />
                             </div>
                             {/* Region */}
                             <div className="form-control">
                                 <label className="label-text font-medium mb-1">Your Region</label>
                                 <select 
-                                    {...register("region", { required: true })} 
+                                    {...register("region", { required: "Region is required" })} 
                                     className="select select-bordered w-full bg-gray-50"
                                 >
-                                    <option value="">Select your Region</option>
+                                    <option value="">Select Region</option>
                                     {divisions.map(div => <option key={div} value={div}>{div}</option>)}
                                 </select>
                             </div>
@@ -100,11 +150,11 @@ const BeARider = () => {
                             <div className="form-control">
                                 <label className="label-text font-medium mb-1">Your District</label>
                                 <select 
-                                    {...register("district", { required: true })} 
+                                    {...register("district", { required: "District is required" })} 
                                     className="select select-bordered w-full bg-gray-50"
                                     disabled={!selectedRegion}
                                 >
-                                    <option value="">Select your District</option>
+                                    <option value="">Select District</option>
                                     {filteredDistricts.map(dis => <option key={dis} value={dis}>{dis}</option>)}
                                 </select>
                             </div>
@@ -112,7 +162,7 @@ const BeARider = () => {
                             <div className="form-control">
                                 <label className="label-text font-medium mb-1">NID No</label>
                                 <input 
-                                    {...register("nid", { required: true })} 
+                                    {...register("nid", { required: "NID is required" })} 
                                     className="input input-bordered w-full bg-gray-50" 
                                     placeholder="NID Number"
                                 />
@@ -124,18 +174,18 @@ const BeARider = () => {
                             <div className="form-control">
                                 <label className="label-text font-medium mb-1">Phone Number</label>
                                 <input 
-                                    {...register("phone", { required: true })} 
+                                    {...register("phone", { required: "Phone is required" })} 
                                     className="input input-bordered w-full bg-gray-50" 
-                                    placeholder="Phone Number"
+                                    placeholder="017XXXXXXXX"
                                 />
                             </div>
                             {/* Bike Model */}
                             <div className="form-control">
-                                <label className="label-text font-medium mb-1">Bike Brand Model and Year</label>
+                                <label className="label-text font-medium mb-1">Bike Model & Year</label>
                                 <input 
-                                    {...register("bikeModel", { required: true })} 
+                                    {...register("bikeModel", { required: "Required" })} 
                                     className="input input-bordered w-full bg-gray-50" 
-                                    placeholder="e.g. Yamaha FZS 2022"
+                                    placeholder="Yamaha R15 2023"
                                 />
                             </div>
                         </div>
@@ -144,32 +194,31 @@ const BeARider = () => {
                         <div className="form-control">
                             <label className="label-text font-medium mb-1">Bike Registration Number</label>
                             <input 
-                                {...register("bikeReg", { required: true })} 
+                                {...register("bikeReg", { required: "Required" })} 
                                 className="input input-bordered w-full bg-gray-50" 
-                                placeholder="Bike Registration Number"
+                                placeholder="DHAKA METRO-LA-11-2222"
                             />
                         </div>
 
                         {/* About */}
                         <div className="form-control">
-                            <label className="label-text font-medium mb-1">Tell Us About Yourself</label>
+                            <label className="label-text font-medium mb-1">About Experience</label>
                             <textarea 
                                 {...register("about")} 
-                                className="textarea textarea-bordered w-full bg-gray-50" 
-                                placeholder="Write something about your experience..."
+                                className="textarea textarea-bordered w-full bg-gray-50 h-24" 
+                                placeholder="Briefly describe your delivery experience..."
                             ></textarea>
                         </div>
 
                         <button 
                             type="submit" 
-                            className="btn w-full bg-[#D4E96D] hover:bg-[#c2d951] border-none text-black font-bold text-lg mt-4"
+                            className="btn w-full bg-[#D4E96D] hover:bg-[#c2d951] border-none text-[#0D2A38] font-bold text-lg mt-4 shadow-md"
                         >
-                            Submit
+                            Submit Application
                         </button>
                     </form>
                 </div>
 
-                {/* Right Side: Image */}
                 <div className="hidden md:flex flex-1 justify-center">
                     <img src={riderImg} alt="Rider Illustration" className="w-full max-w-md object-contain" />
                 </div>
