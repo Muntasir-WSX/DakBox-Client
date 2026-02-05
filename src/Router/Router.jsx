@@ -19,6 +19,7 @@ import BeARider from "../Pages/BeARider/BeARider";
 import ActiveRiders from "../Pages/DashBoard/Riders/ActiveRiders/ActiveRiders";
 import PendingRiders from "../Pages/DashBoard/Riders/PendingRiders/PendingRiders";
 import Error from "../Pages/Error/Error";
+import Services from "../Pages/FullHome/Home/Services/Services";
 
 
 export const router = createBrowserRouter([
@@ -48,6 +49,10 @@ export const router = createBrowserRouter([
         path: "aboutUs",
         Component: AboutUs
       },
+      {
+        path: "services",
+        Component: Services
+      }
     
     ]
   },

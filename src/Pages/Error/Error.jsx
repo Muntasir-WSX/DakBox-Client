@@ -4,16 +4,14 @@ import errorAnim from "../../../animations/error.json";
 import { Home, AlertTriangle } from 'lucide-react';
 import LottieWrapper from 'lottie-react';
 
-// SignIn পেজের মতো Wrapper হ্যান্ডেল করা
 const Lottie = LottieWrapper.default || LottieWrapper;
 
 const Error = () => {
     return (
         <div className="min-h-screen bg-[#0D2A38] flex flex-col items-center justify-center p-6 text-center" style={{ fontFamily: "'Urbanist', sans-serif" }}>
-            
-            {/* Lottie Animation Container */}
+       
             <div className="w-full max-w-lg mb-8">
-                {/* এখানে Lottie (capital L) ব্যবহার করা হয়েছে */}
+              
                 <Lottie 
                     animationData={errorAnim} 
                     loop={true} 
