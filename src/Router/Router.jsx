@@ -43,7 +43,8 @@ export const router = createBrowserRouter([
       {
         path: "aboutUs",
         Component: AboutUs
-      }
+      },
+    
     ]
   },
 

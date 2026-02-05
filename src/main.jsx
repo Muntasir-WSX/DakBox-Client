@@ -16,7 +16,7 @@ Aos.init();
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <HelmetProvider>
-      <div className="font-urbanist max-w-auto mx-auto">
+      <div className="font-urbanist w-full min-h-screen">
         <QueryClientProvider client={queryClient}>
           <AuthProvider>
             <Toaster
