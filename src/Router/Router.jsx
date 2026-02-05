@@ -15,6 +15,7 @@ import Payment from "../Pages/DashBoard/PayemtIntegration/Payment";
 import PaymentHistory from "../Pages/DashBoard/PaymentHistory/PaymentHistory";
 import TrackPackage from "../Pages/DashBoard/TrackPackage/TrackPackage";
 import MYProfile from "../Pages/DashBoard/MYProfile/MYProfile";
+import BeARider from "../Pages/BeARider/BeARider";
 
 
 export const router = createBrowserRouter([
@@ -34,6 +35,10 @@ export const router = createBrowserRouter([
       {
         path: "send-parcel",
         element: <PrivateRoutes><SendParcel /></PrivateRoutes>
+      },
+      {
+         path: "be-a-rider",
+         element: <PrivateRoutes><BeARider></BeARider></PrivateRoutes>
       },
       {
         path: "aboutUs",

@@ -37,7 +37,7 @@ const Navbar = () => {
       <li><NavLink to="/send-parcel" className={navLinkStyles}>Send Parcel</NavLink></li>
       <li><NavLink to="/services" className={navLinkStyles}>Services</NavLink></li>
       <li><NavLink to="/coverage" className={navLinkStyles}>Coverage</NavLink></li>
-      <li><NavLink to="/contact" className={navLinkStyles}>Be a Rider</NavLink></li>
+      <li><NavLink to="/be-a-rider" className={navLinkStyles}>Be a Rider</NavLink></li>
       <li><NavLink to="/aboutUs" className={navLinkStyles}>About Us</NavLink></li>
     </>
   );

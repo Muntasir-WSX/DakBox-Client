@@ -2,28 +2,57 @@ import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast, { Toaster } from "react-hot-toast";
 import Swal from "sweetalert2"; 
-import { warehouseData } from "../../Data/WareHouse";
 import { FormInput, FormSelect, FormTextArea } from "./FormComponents";
 import useAuth from "../../Hooks/useAuth";
 import useAxiosSecure from "../../Hooks/useAxiosSecure";
 import { Helmet } from "react-helmet-async";
 
+// সঠিক পাথ অনুযায়ী ইমপোর্ট (তোর দেওয়া পাথ অনুযায়ী)
+import divisions from '../../../data/division.json';
+import warehouses from '../../../data/warehouses.json';
+
 const SendParcel = () => {
   const { user } = useAuth();
   const [deliveryCharge, setDeliveryCharge] = useState(0);
+  const [senderDistricts, setSenderDistricts] = useState([]);
+  const [receiverDistricts, setReceiverDistricts] = useState([]);
   const axiosSecure = useAxiosSecure();
 
-  const { register, handleSubmit, watch, reset, formState: { errors } } = useForm({
+  const { register, handleSubmit, watch, reset, setValue, formState: { errors } } = useForm({
     defaultValues: {
       parcelType: "Document",
       weight: 1,
+      senderRegion: "",
       senderDistrict: "",
+      receiverRegion: "",
       receiverDistrict: "",
     },
   });
 
   const watchedValues = watch();
+// Dynamic district filtering based on selected region
+  useEffect(() => {
+    if (watchedValues.senderRegion) {
+      const filtered = warehouses
+        .filter(w => w.region === watchedValues.senderRegion)
+        .map(w => w.district);
+      setSenderDistricts([...new Set(filtered)].sort());
+    } else {
+      setSenderDistricts([]);
+    }
+  }, [watchedValues.senderRegion]);
 
+  useEffect(() => {
+    if (watchedValues.receiverRegion) {
+      const filtered = warehouses
+        .filter(w => w.region === watchedValues.receiverRegion)
+        .map(w => w.district);
+      setReceiverDistricts([...new Set(filtered)].sort());
+    } else {
+      setReceiverDistricts([]);
+    }
+  }, [watchedValues.receiverRegion]);
+  // Delivery charge calculation logic
   useEffect(() => {
     const { parcelType, weight, senderDistrict, receiverDistrict } = watchedValues;
     if (!senderDistrict || !receiverDistrict) return setDeliveryCharge(0);
@@ -44,6 +73,7 @@ const SendParcel = () => {
         if (!isSameCity) charge += 40;
       }
     }
+      // Set the calculated charge
     setDeliveryCharge(charge);
   }, [watchedValues.parcelType, watchedValues.weight, watchedValues.senderDistrict, watchedValues.receiverDistrict]);
 
@@ -55,7 +85,6 @@ const SendParcel = () => {
   };
 
   const onSubmit = async (data) => {
-    
     Swal.fire({
       title: "Confirm Your Booking?",
       text: `Total Charge: ৳${deliveryCharge}. Do you want to proceed?`,
@@ -65,8 +94,6 @@ const SendParcel = () => {
       cancelButtonColor: "#1F2937",
       confirmButtonText: "Proceed to Confirm",
       cancelButtonText: "Edit Details",
-      background: "#FFFFFF",
-      color: "#0D2A38",
     }).then(async (result) => {
       if (result.isConfirmed) {
         const finalData = {
@@ -80,9 +107,7 @@ const SendParcel = () => {
         };
 
         try {
-          
           const res = await axiosSecure.post("/parcels", finalData);
-          console.log("Server Response:", res.data);
           if (res.data.insertedId) {
             Swal.fire({
               title: "Booked!",
@@ -93,20 +118,17 @@ const SendParcel = () => {
             reset(); 
           }
         } catch (error) {
-          console.error("Booking Error:", error);
           toast.error("Something went wrong. Please try again.");
         }
       }
     });
   };
 
-  const districts = [...new Set(warehouseData.map((item) => item.district))].sort();
-
   return (
     <section className="py-12 bg-white min-h-screen px-4 font-sans text-[#0D2A38]">
-       <Helmet>
-              <title>DakBox | Send Parcel</title>
-            </Helmet>
+      <Helmet>
+        <title>DakBox | Send Parcel</title>
+      </Helmet>
       <Toaster />
       <div className="max-w-6xl mx-auto">
         <header className="mb-8">
@@ -133,7 +155,6 @@ const SendParcel = () => {
             ))}
           </div>
 
-          {/* Input Fields */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
             <FormInput label="Parcel Name" name="parcelName" register={register} errors={errors} placeholder="Parcel Name" required />
             <FormInput label="Parcel Weight (KG)" name="weight" register={register} errors={errors} type="number" placeholder="Parcel Weight (KG)" required />
@@ -146,7 +167,13 @@ const SendParcel = () => {
               <FormInput label="Sender Name" name="senderName" register={register} errors={errors} required />
               <FormInput label="Address" name="senderAddress" register={register} errors={errors} required />
               <FormInput label="Sender Phone No" name="senderPhone" register={register} errors={errors} required />
-              <FormSelect label="Sender District" name="senderDistrict" register={register} errors={errors} options={districts} required />
+              
+              {/* Region Select */}
+              <FormSelect label="Sender Region" name="senderRegion" register={register} errors={errors} options={divisions} required />
+              
+              {/* District Select (Filtered) */}
+              <FormSelect label="Sender District" name="senderDistrict" register={register} errors={errors} options={senderDistricts} required disabled={!watchedValues.senderRegion} />
+              
               <FormTextArea label="Pickup Instruction" name="pickupNote" register={register} />
             </div>
 
@@ -156,7 +183,13 @@ const SendParcel = () => {
               <FormInput label="Receiver Name" name="receiverName" register={register} errors={errors} required />
               <FormInput label="Receiver Address" name="receiverAddress" register={register} errors={errors} required />
               <FormInput label="Receiver Contact No" name="receiverPhone" register={register} errors={errors} required />
-              <FormSelect label="Receiver District" name="receiverDistrict" register={register} errors={errors} options={districts} required />
+              
+              {/* Region Select */}
+              <FormSelect label="Receiver Region" name="receiverRegion" register={register} errors={errors} options={divisions} required />
+              
+              {/* District Select (Filtered) */}
+              <FormSelect label="Receiver District" name="receiverDistrict" register={register} errors={errors} options={receiverDistricts} required disabled={!watchedValues.receiverRegion} />
+              
               <FormTextArea label="Delivery Instruction" name="deliveryNote" register={register} />
             </div>
           </div>

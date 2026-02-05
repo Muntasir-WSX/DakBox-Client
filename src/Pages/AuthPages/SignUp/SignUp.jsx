@@ -6,15 +6,36 @@ import useAuth from "../../../Hooks/useAuth";
 import toast from "react-hot-toast";
 import { Helmet } from "react-helmet-async";
 import axios from "axios";
-import UseAxios from "../../../Hooks/UseAxios";
+import useAxiosSecure from "../../../Hooks/useAxiosSecure"; // For secure calls
 
 const SignUp = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
   const { createuser, updateUserProfile, signInWithGoogle } = useAuth();
   const navigate = useNavigate();
-  const axiosInstance = UseAxios();
+  const axiosSecure = useAxiosSecure();
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  // 1. Helper function to handle JWT & DB entry
+  const createJWTandUser = async (user, name, photoURL) => {
+    const userInfo = {
+      name: name || user?.displayName,
+      email: user?.email,
+      photoURL: photoURL || user?.photoURL,
+      role: "user",
+      created_at: new Date().toISOString(),
+      last_login: new Date().toISOString()
+    };
+
+    // First get the token and save it to localStorage
+    const { data } = await axios.post(`${import.meta.env.VITE_API_URL}/jwt`, { email: user?.email });
+    if (data.token) {
+      localStorage.setItem('access-token', data.token);
+    }
+
+    // Now use axiosSecure to save user in DB (it will now automatically have the header)
+    return await axiosSecure.post('/users', userInfo);
+  };
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -26,39 +47,27 @@ const SignUp = () => {
   const onSubmit = async (data) => {
     setLoading(true);
     try {
-      // 1. Upload image to ImgBB first
+      // 1. Upload image to ImgBB
       let photoURL = "";
       if (data.image && data.image[0]) {
         const formData = new FormData();
         formData.append("image", data.image[0]);
-        // Correct with backticks
         const imageUploadUrl = `https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_Image_Upload_Key}`;
         const res = await axios.post(imageUploadUrl, formData);
         if (res.data.success) {
           photoURL = res.data.data.display_url;
         }
       }
-      const user = result.user;
 
-      // 2. Create user in Firebase Authentication
+      // 2. Create user in Firebase
       const result = await createuser(data.email, data.password);
       
-      // 3. Update Firebase Profile with name and photo
+      // 3. Update Firebase Profile
       await updateUserProfile(data.name, photoURL);
 
-      // 4. Save User Data to MongoDB Database (MUST BE INSIDE onSubmit)
-      const userInfo = {
-        name: data.name,
-        email: data.email,
-        photoURL: photoURL,
-        role: "user", // Default role assigned in DB
-        created_at: new Date().toISOString(),
-        last_login: new Date().toISOString()
-      };
-
-      const userRes = await axiosInstance.post('/users', userInfo);
+      // 4. Get JWT & Save to MongoDB (The missing piece)
+      const userRes = await createJWTandUser(result.user, data.name, photoURL);
       
-      // Check if DB insertion was successful
       if (userRes.data.insertedId || userRes.data.inserted === false) {
         toast.success("Account created successfully!", {
           style: { background: "#D9F26B", color: "#000", fontWeight: "bold" },
@@ -74,35 +83,22 @@ const SignUp = () => {
     }
   };
 
-  // Google Sign-In with DB entry
   const handleGoogleSignUp = async () => {
-  try {
-    const result = await signInWithGoogle();
-    const user = result.user;
-    
-    // Prepare user info for DB
-    const userInfo = {
-      name: user?.displayName,
-      email: user?.email,
-      photoURL: user?.photoURL,
-      role: "user",
-      created_at: new Date().toISOString(),
-      last_login: new Date().toISOString()
-    };
-
-    // Post to DB
-    const res = await axiosInstance.post('/users', userInfo);
-    
-    // logic check: data logic should handle both new and existing users
-    if (res.data.insertedId || res.data.inserted === false) {
-      toast.success("Signed in with Google successfully!");
-      navigate("/");
+    try {
+      const result = await signInWithGoogle();
+      
+      // Get JWT & Save to MongoDB
+      const res = await createJWTandUser(result.user);
+      
+      if (res.data.insertedId || res.data.inserted === false) {
+        toast.success("Signed in with Google successfully!");
+        navigate("/");
+      }
+    } catch (error) {
+      console.error("Google Sign-In Error:", error);
+      toast.error(error.message);
     }
-  } catch (error) {
-    console.error("Google Sign-In Error:", error);
-    toast.error(error.message);
-  }
-};
+  };
 
   return (
     <div className="w-full">

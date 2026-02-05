@@ -1,10 +1,11 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import { FcGoogle } from "react-icons/fc";
-import { Link, useNavigate, useLocation } from "react-router-dom"; // useLocation যোগ করা হয়েছে
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import useAuth from "../../../Hooks/useAuth";
 import toast from "react-hot-toast";
 import { Helmet } from "react-helmet-async";
+import axios from "axios";
 
 const SignIn = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
@@ -12,8 +13,21 @@ const SignIn = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
- 
   const from = location.state?.from?.pathname || "/";
+
+  // Helper function to handle JWT token storage
+  const handleJWTAndNavigate = async (email) => {
+    try {
+      const { data } = await axios.post(`${import.meta.env.VITE_API_URL}/jwt`, { email });
+      if (data.token) {
+        localStorage.setItem('access-token', data.token);
+        navigate(from, { replace: true });
+      }
+    } catch (err) {
+      console.error("JWT Error:", err);
+      toast.error("Failed to secure session!");
+    }
+  };
 
   const onSubmit = (data) => {
     signIn(data.email, data.password)
@@ -21,9 +35,11 @@ const SignIn = () => {
         toast.success("Welcome back!", {
           style: { background: "#1F2937", color: "#D9F26B", border: "1px solid #D9F26B" },
         });
-        navigate(from, { replace: true }); 
+        // Fetch JWT token after successful sign-in
+        handleJWTAndNavigate(result.user.email);
       })
       .catch((error) => {
+        console.error(error);
         toast.error("Login failed. Check your credentials.");
       });
   };
@@ -34,7 +50,8 @@ const SignIn = () => {
         toast.success("Google Sign-in Successful", {
           style: { background: "#D9F26B", color: "#000" }
         });
-        navigate(from, { replace: true }); 
+        // Fetch JWT token after successful Google sign-in
+        handleJWTAndNavigate(result.user.email);
       })
       .catch((error) => {
         toast.error(error.message);
@@ -77,7 +94,7 @@ const SignIn = () => {
           />
           {errors.password && <span className="text-red-500 text-xs mt-1">{errors.password.message}</span>}
           <div className="flex justify-end mt-1">
-            <a href="#" className="text-xs text-[#a8bf34] hover:underline font-medium">Forgot password?</a>
+            <button type="button" className="text-xs text-[#a8bf34] hover:underline font-medium">Forgot password?</button>
           </div>
         </div>
 

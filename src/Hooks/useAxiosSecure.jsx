@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import useAuth from './useAuth';
 
 const axiosSecure = axios.create({
-    baseURL: 'http://localhost:5000', // Ensure this matches your server URL
+    baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000',
 });
 
 const useAxiosSecure = () => {
@@ -30,7 +30,7 @@ const useAxiosSecure = () => {
         // Logout user if token is invalid or expired
         if (status === 401 || status === 403) {
             await logOut();
-            navigate('/login');
+            navigate('/signin');
         }
         return Promise.reject(error);
     });
