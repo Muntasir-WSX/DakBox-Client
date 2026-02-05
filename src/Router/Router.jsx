@@ -18,6 +18,7 @@ import MYProfile from "../Pages/DashBoard/MYProfile/MYProfile";
 import BeARider from "../Pages/BeARider/BeARider";
 import ActiveRiders from "../Pages/DashBoard/Riders/ActiveRiders/ActiveRiders";
 import PendingRiders from "../Pages/DashBoard/Riders/PendingRiders/PendingRiders";
+import Error from "../Pages/Error/Error";
 
 
 export const router = createBrowserRouter([
@@ -25,6 +26,7 @@ export const router = createBrowserRouter([
   {
     path: "/",
     element: <MainLayout />, 
+    errorElement: <Error></Error>,
     children: [
       {
         index: true,
@@ -54,6 +56,7 @@ export const router = createBrowserRouter([
   {
     path: "dashboard",
     element: <PrivateRoutes><DashBoardLayout /></PrivateRoutes>,
+    errorElement: <Error></Error>,
     children: [
       {
         index: true,
@@ -102,6 +105,7 @@ export const router = createBrowserRouter([
   {
     path: "/",
     element: <AuthLayout />,
+    errorElement: <Error></Error>,
     children: [
       {
         path: "signin",
@@ -112,5 +116,10 @@ export const router = createBrowserRouter([
         element: <SignUp />
       }
     ]
+  },
+  {
+    path: "*",
+    Component: Error
   }
+
 ]);
