@@ -14,12 +14,12 @@ import AboutUs from "../Pages/AboutUs/AboutUs";
 import Payment from "../Pages/DashBoard/PayemtIntegration/Payment";
 import PaymentHistory from "../Pages/DashBoard/PaymentHistory/PaymentHistory";
 import TrackPackage from "../Pages/DashBoard/TrackPackage/TrackPackage";
-import MYProfile from "../Pages/DashBoard/MYProfile/MYProfile";
 import BeARider from "../Pages/BeARider/BeARider";
 import ActiveRiders from "../Pages/DashBoard/Riders/ActiveRiders/ActiveRiders";
 import PendingRiders from "../Pages/DashBoard/Riders/PendingRiders/PendingRiders";
 import Error from "../Pages/Error/Error";
 import Services from "../Pages/FullHome/Home/Services/Services";
+import MakeAdmin from "../Pages/DashBoard/MakeAdmin/MakeAdmin";
 
 
 export const router = createBrowserRouter([
@@ -88,8 +88,8 @@ export const router = createBrowserRouter([
         Component:TrackPackage
       },
       {
-        path: 'my-profile',
-        Component:MYProfile
+        path: 'make-admin',
+        Component:MakeAdmin
       },
       {
         path: 'pending-riders',

@@ -9,16 +9,25 @@ import { Helmet } from 'react-helmet-async';
 import Swal from 'sweetalert2';
 
 const BeARider = () => {
-    const { user } = useAuth(); // ছবি বা অন্যান্য ডাটার জন্য রাখলাম
+    const { user } = useAuth(); 
     const axiosSecure = useAxiosSecure();
     const [filteredDistricts, setFilteredDistricts] = useState([]);
     
     const { register, handleSubmit, watch, setValue, reset, formState: { errors } } = useForm({
+        // ডিফল্ট ভ্যালু হিসেবে ইউজারের নাম ও ইমেইল সেট করে দেওয়া হলো
         defaultValues: {
-            name: "", // খালি করে দিলাম যাতে টাইপ করা যায়
-            email: "" // editable করার জন্য default empty
+            name: user?.displayName || "", 
+            email: user?.email || "" 
         }
     });
+
+    // যদি পেজ রিফ্রেশ করার পর ইউজার ডাটা দেরিতে আসে, তার জন্য এই useEffect
+    useEffect(() => {
+        if (user) {
+            setValue("name", user?.displayName);
+            setValue("email", user?.email);
+        }
+    }, [user, setValue]);
     
     const selectedRegion = watch("region");
 
@@ -48,7 +57,6 @@ const BeARider = () => {
                     ...data,
                     status: "pending",
                     appliedDate: new Date().toISOString(),
-                    // যদি ইউজার লগইন থাকে তবে তার ফটো যাবে, নাহলে ডিফল্ট
                     userPhoto: user?.photoURL || "https://i.ibb.co/5GzXkwq/user.png" 
                 };
 
@@ -58,7 +66,7 @@ const BeARider = () => {
                     if (res.data.insertedId) {
                         Swal.fire({
                             title: "Submitted!",
-                            text: `Application sent for ${data.email}`,
+                            text: `Application sent successfully!`,
                             icon: "success",
                             confirmButtonColor: "#D4E96D",
                         });
@@ -85,45 +93,36 @@ const BeARider = () => {
                 <div className="flex-1 w-full">
                     <h1 className="text-4xl font-bold text-[#0D2A38] mb-2">Be a Rider</h1>
                     <p className="text-gray-500 mb-8">
-                        Test different accounts by changing the name and email below.
+                        Complete the form below to apply as a rider. 
                     </p>
 
                     <h3 className="text-xl font-semibold mb-6">Application Form</h3>
                     
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {/* Name - Now Editable */}
+                            {/* Name - Now readOnly */}
                             <div className="form-control">
                                 <label className="label-text font-medium mb-1">Full Name</label>
                                 <input 
-                                    {...register("name", { required: "Name is required" })} 
-                                    className={`input input-bordered w-full bg-gray-50 ${errors.name ? 'border-red-500' : ''}`} 
-                                    placeholder="Enter applicant name"
+                                    {...register("name")} 
+                                    readOnly
+                                    className="input input-bordered w-full bg-gray-100 cursor-not-allowed" 
                                 />
-                                {errors.name && <span className="text-red-500 text-xs mt-1">{errors.name.message}</span>}
                             </div>
                             
-                            {/* Email - Now Editable */}
+                            {/* Email - Now readOnly */}
                             <div className="form-control">
                                 <label className="label-text font-medium mb-1">Email Address</label>
                                 <input 
-                                    type="email"
-                                    {...register("email", { 
-                                        required: "Email is required",
-                                        pattern: {
-                                            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                                            message: "Invalid email address"
-                                        }
-                                    })} 
-                                    className={`input input-bordered w-full bg-gray-50 ${errors.email ? 'border-red-500' : ''}`} 
-                                    placeholder="yourname@example.com"
+                                    {...register("email")} 
+                                    readOnly
+                                    className="input input-bordered w-full bg-gray-100 cursor-not-allowed" 
                                 />
-                                {errors.email && <span className="text-red-500 text-xs mt-1">{errors.email.message}</span>}
                             </div>
                         </div>
 
+                        {/* ... বাকি ফিল্ডগুলো আগের মতোই থাকবে (License, Region, District, NID, ইত্যাদি) */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {/* License */}
                             <div className="form-control">
                                 <label className="label-text font-medium mb-1">Driving License</label>
                                 <input 
@@ -131,8 +130,8 @@ const BeARider = () => {
                                     className="input input-bordered w-full bg-gray-50" 
                                     placeholder="DL-123456"
                                 />
+                                {errors.license && <span className="text-red-500 text-xs mt-1">{errors.license.message}</span>}
                             </div>
-                            {/* Region */}
                             <div className="form-control">
                                 <label className="label-text font-medium mb-1">Your Region</label>
                                 <select 
@@ -146,7 +145,6 @@ const BeARider = () => {
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {/* District */}
                             <div className="form-control">
                                 <label className="label-text font-medium mb-1">Your District</label>
                                 <select 
@@ -158,7 +156,6 @@ const BeARider = () => {
                                     {filteredDistricts.map(dis => <option key={dis} value={dis}>{dis}</option>)}
                                 </select>
                             </div>
-                            {/* NID */}
                             <div className="form-control">
                                 <label className="label-text font-medium mb-1">NID No</label>
                                 <input 
@@ -170,7 +167,6 @@ const BeARider = () => {
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {/* Phone */}
                             <div className="form-control">
                                 <label className="label-text font-medium mb-1">Phone Number</label>
                                 <input 
@@ -179,7 +175,6 @@ const BeARider = () => {
                                     placeholder="017XXXXXXXX"
                                 />
                             </div>
-                            {/* Bike Model */}
                             <div className="form-control">
                                 <label className="label-text font-medium mb-1">Bike Model & Year</label>
                                 <input 
@@ -188,26 +183,6 @@ const BeARider = () => {
                                     placeholder="Yamaha R15 2023"
                                 />
                             </div>
-                        </div>
-
-                        {/* Bike Reg */}
-                        <div className="form-control">
-                            <label className="label-text font-medium mb-1">Bike Registration Number</label>
-                            <input 
-                                {...register("bikeReg", { required: "Required" })} 
-                                className="input input-bordered w-full bg-gray-50" 
-                                placeholder="DHAKA METRO-LA-11-2222"
-                            />
-                        </div>
-
-                        {/* About */}
-                        <div className="form-control">
-                            <label className="label-text font-medium mb-1">About Experience</label>
-                            <textarea 
-                                {...register("about")} 
-                                className="textarea textarea-bordered w-full bg-gray-50 h-24" 
-                                placeholder="Briefly describe your delivery experience..."
-                            ></textarea>
                         </div>
 
                         <button 

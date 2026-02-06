@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Eye, ShieldAlert, BadgeCheck, X, UserCheck } from 'lucide-react';
+import { Eye, ShieldAlert, BadgeCheck, X, UserCheck, Trash2 } from 'lucide-react'; // Trash2 যোগ করা হয়েছে
 import Swal from 'sweetalert2';
 import useAxiosSecure from '../../../../Hooks/useAxiosSecure';
 
@@ -18,7 +18,7 @@ const ActiveRiders = () => {
         }
     });
 
-    // Toggle Status Mutation
+    // Toggle Status Mutation (Active <-> Penalty)
     const toggleMutation = useMutation({
         mutationFn: async (rider) => {
             const res = await axiosSecure.patch(`/rider-applications/toggle-status/${rider._id}`, {
@@ -30,9 +30,21 @@ const ActiveRiders = () => {
         onSuccess: (data) => {
             queryClient.invalidateQueries(['all-riders-manage']);
             Swal.fire("Success!", data.message || "Status updated successfully", "success");
+        }
+    });
+
+    // --- নতুন: Delete Rider Mutation ---
+    const deleteRiderMutation = useMutation({
+        mutationFn: async (id) => {
+            const res = await axiosSecure.delete(`/rider-applications/${id}`);
+            return res.data;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries(['all-riders-manage']);
+            Swal.fire("Removed!", "Rider has been removed and role reset to user.", "success");
         },
         onError: () => {
-            Swal.fire("Error", "Failed to update status", "error");
+            Swal.fire("Error", "Failed to remove rider", "error");
         }
     });
 
@@ -48,6 +60,23 @@ const ActiveRiders = () => {
         }).then((result) => {
             if (result.isConfirmed) {
                 toggleMutation.mutate(rider);
+            }
+        });
+    };
+
+    // --- নতুন: Handle Delete ---
+    const handleDeleteRider = (id) => {
+        Swal.fire({
+            title: "Remove Rider Permanently?",
+            text: "This will delete their application and change their role back to 'user'.",
+            icon: "error",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, Remove Him!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                deleteRiderMutation.mutate(id);
             }
         });
     };
@@ -70,7 +99,7 @@ const ActiveRiders = () => {
                             <th>Rider Info</th>
                             <th>Status</th>
                             <th className="text-center">Toggle Access</th>
-                            <th className="text-center">Profile</th>
+                            <th className="text-center">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -113,9 +142,20 @@ const ActiveRiders = () => {
                                         </button>
                                     </td>
                                     <td className="text-center">
-                                        <button onClick={() => setSelectedRider(rider)} className="btn btn-square btn-sm bg-gray-100 text-gray-600 border-none hover:bg-gray-200">
-                                            <Eye size={18} />
-                                        </button>
+                                        <div className="flex justify-center gap-2">
+                                            <button onClick={() => setSelectedRider(rider)} className="btn btn-square btn-sm bg-gray-100 text-gray-600 border-none hover:bg-gray-200">
+                                                <Eye size={18} />
+                                            </button>
+                                            
+                                            {/* নতুন: ডিলিট বাটন */}
+                                            <button 
+                                                onClick={() => handleDeleteRider(rider._id)} 
+                                                className="btn btn-square btn-sm bg-red-100 text-red-600 border-none hover:bg-red-200"
+                                                title="Remove Rider"
+                                            >
+                                                <Trash2 size={18} />
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             ))
