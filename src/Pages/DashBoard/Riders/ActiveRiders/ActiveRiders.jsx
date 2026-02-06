@@ -1,60 +1,65 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Eye, UserX, X, BadgeCheck } from 'lucide-react';
+import { Eye, ShieldAlert, BadgeCheck, X, UserCheck } from 'lucide-react';
 import Swal from 'sweetalert2';
 import useAxiosSecure from '../../../../Hooks/useAxiosSecure';
-
 
 const ActiveRiders = () => {
     const axiosSecure = useAxiosSecure();
     const queryClient = useQueryClient();
     const [selectedRider, setSelectedRider] = useState(null);
 
-    // Fetch Active Riders
-    const { data: activeRiders = [], isLoading } = useQuery({
-        queryKey: ['active-riders'],
+    // Fetch Active & Blocked Riders (Exclude Pending)
+    const { data: riders = [], isLoading } = useQuery({
+        queryKey: ['all-riders-manage'],
         queryFn: async () => {
             const res = await axiosSecure.get('/rider-applications');
-            // Filtering for active status
-            return res.data.filter(rider => rider.status === 'active');
+            return res.data?.filter(rider => rider.status !== 'pending') || [];
         }
     });
 
-    // Mutation for Disapproving Rider (Moving back to Pending)
-    const disapproveMutation = useMutation({
-        mutationFn: async (id) => {
-            const res = await axiosSecure.patch(`/rider-applications/disapprove/${id}`);
+    // Toggle Status Mutation
+    const toggleMutation = useMutation({
+        mutationFn: async (rider) => {
+            const res = await axiosSecure.patch(`/rider-applications/toggle-status/${rider._id}`, {
+                email: rider.email,
+                currentStatus: rider.status
+            });
             return res.data;
         },
-        onSuccess: () => {
-            queryClient.invalidateQueries(['active-riders']);
-            queryClient.invalidateQueries(['pending-riders']);
-            Swal.fire("Disapproved!", "Rider has been moved back to pending list.", "success");
+        onSuccess: (data) => {
+            queryClient.invalidateQueries(['all-riders-manage']);
+            Swal.fire("Success!", data.message || "Status updated successfully", "success");
+        },
+        onError: () => {
+            Swal.fire("Error", "Failed to update status", "error");
         }
     });
 
-    const handleDisapprove = (id) => {
+    const handleToggle = (rider) => {
+        const isActive = rider.status === 'active';
         Swal.fire({
-            title: "Disapprove Rider?",
-            text: "This will remove their active status and move them to pending.",
+            title: isActive ? "Apply Penalty?" : "Restore Access?",
+            text: isActive ? "Rider will be restricted from the platform." : "Rider will be active again.",
             icon: "warning",
             showCancelButton: true,
-            confirmButtonColor: "#ef4444",
-            cancelButtonColor: "#0D2A38",
-            confirmButtonText: "Yes, Disapprove!"
+            confirmButtonColor: isActive ? "#ef4444" : "#D4E96D",
+            confirmButtonText: isActive ? "Yes, Restrict" : "Yes, Activate"
         }).then((result) => {
-            if (result.isConfirmed) disapproveMutation.mutate(id);
+            if (result.isConfirmed) {
+                toggleMutation.mutate(rider);
+            }
         });
     };
 
-    if (isLoading) return <span className="loading loading-dots loading-lg"></span>;
+    if (isLoading) return <div className="flex justify-center p-20"><span className="loading loading-dots loading-lg text-[#D4E96D]"></span></div>;
 
     return (
-        <div className="bg-white p-6 rounded-3xl shadow-sm">
+        <div className="bg-white p-6 rounded-3xl shadow-sm min-h-screen">
             <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-[#0D2A38]">Active Riders</h2>
+                <h2 className="text-2xl font-bold text-[#0D2A38]">Manage Riders</h2>
                 <div className="badge bg-[#D4E96D] text-[#0D2A38] p-4 font-bold border-none">
-                    Total Active: {activeRiders.length}
+                    Verified Riders: {riders.length}
                 </div>
             </div>
 
@@ -63,97 +68,78 @@ const ActiveRiders = () => {
                     <thead>
                         <tr className="bg-gray-100 text-[#0D2A38]">
                             <th>Rider Info</th>
-                            <th>Location</th>
                             <th>Status</th>
-                            <th className="text-center">Manage</th>
+                            <th className="text-center">Toggle Access</th>
+                            <th className="text-center">Profile</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {activeRiders.map((rider) => (
-                            <tr key={rider._id} className="hover:bg-gray-50">
-                                <td>
-                                    <div className="flex items-center gap-3">
-                                        <div className="avatar">
-                                            <div className="mask mask-squircle w-12 h-12">
-                                                <img src={rider.userPhoto} alt="Rider" />
+                        {riders.length === 0 ? (
+                            <tr><td colSpan="4" className="text-center py-10 text-gray-400">No active riders found.</td></tr>
+                        ) : (
+                            riders.map((rider) => (
+                                <tr key={rider._id} className="hover:bg-gray-50 border-b">
+                                    <td>
+                                        <div className="flex items-center gap-3">
+                                            <div className="avatar">
+                                                <div className="mask mask-squircle w-12 h-12">
+                                                    <img src={rider.userPhoto || 'https://via.placeholder.com/150'} alt="Rider" />
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <div className="font-bold">{rider.name}</div>
+                                                <div className="text-sm opacity-50">{rider.email}</div>
                                             </div>
                                         </div>
-                                        <div>
-                                            <div className="font-bold flex items-center gap-1">
-                                                {rider.name} <BadgeCheck size={14} className="text-blue-500" />
-                                            </div>
-                                            <div className="text-sm opacity-50">{rider.email}</div>
+                                    </td>
+                                    <td>
+                                        <div className={`badge badge-sm font-bold p-3 border-none ${
+                                            rider.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                                        }`}>
+                                            {rider.status === 'active' ? 'ACTIVE' : 'RESTRICTED'}
                                         </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <span className="font-medium">{rider.district}</span>
-                                    <p className="text-xs text-gray-400">{rider.region}</p>
-                                </td>
-                                <td>
-                                    <div className="badge badge-success badge-outline gap-1">
-                                        <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                                        Active
-                                    </div>
-                                </td>
-                                <td className="flex justify-center gap-2">
-                                    {/* View Details */}
-                                    <button 
-                                        onClick={() => setSelectedRider(rider)}
-                                        className="btn btn-square btn-sm bg-gray-100 text-gray-600 border-none hover:bg-gray-200"
-                                    >
-                                        <Eye size={18} />
-                                    </button>
-
-                                    {/* Disapprove (Job khawa) */}
-                                    <button 
-                                        onClick={() => handleDisapprove(rider._id)}
-                                        className="btn btn-square btn-sm bg-red-50 text-red-500 border-none hover:bg-red-500 hover:text-white transition-colors"
-                                        title="Disapprove Rider"
-                                    >
-                                        <UserX size={18} />
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
+                                    </td>
+                                    <td className="text-center">
+                                        <button 
+                                            onClick={() => handleToggle(rider)}
+                                            disabled={toggleMutation.isLoading}
+                                            className={`btn btn-sm rounded-lg border-none px-4 flex items-center gap-2 mx-auto ${
+                                                rider.status === 'active' 
+                                                ? 'bg-red-50 text-red-600 hover:bg-red-500 hover:text-white' 
+                                                : 'bg-green-50 text-green-600 hover:bg-green-500 hover:text-white'
+                                            }`}
+                                        >
+                                            {rider.status === 'active' ? <><ShieldAlert size={16}/> Penalty</> : <><UserCheck size={16}/> Activate</>}
+                                        </button>
+                                    </td>
+                                    <td className="text-center">
+                                        <button onClick={() => setSelectedRider(rider)} className="btn btn-square btn-sm bg-gray-100 text-gray-600 border-none hover:bg-gray-200">
+                                            <Eye size={18} />
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))
+                        )}
                     </tbody>
                 </table>
             </div>
 
-            {/* Rider Details Modal */}
+            {/* Modal */}
             {selectedRider && (
                 <div className="modal modal-open">
-                    <div className="modal-box max-w-2xl bg-white rounded-3xl">
+                    <div className="modal-box max-w-2xl bg-white rounded-3xl border-t-8 border-[#0D2A38]">
                         <div className="flex justify-between items-center border-b pb-4">
-                            <h3 className="font-bold text-2xl text-[#0D2A38]">Active Profile</h3>
-                            <button onClick={() => setSelectedRider(null)} className="btn btn-sm btn-circle btn-ghost">
-                                <X size={24} />
-                            </button>
+                            <h3 className="font-bold text-2xl text-[#0D2A38]">Rider Profile</h3>
+                            <button onClick={() => setSelectedRider(null)} className="btn btn-sm btn-circle btn-ghost"><X size={24} /></button>
                         </div>
-                        
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mt-6">
-                            <div className="bg-blue-50 p-3 rounded-2xl">
-                                <p className="text-[10px] text-blue-400 uppercase font-black">License</p>
-                                <p className="text-md font-bold text-blue-900">{selectedRider.license}</p>
-                            </div>
-                            <div className="bg-purple-50 p-3 rounded-2xl">
-                                <p className="text-[10px] text-purple-400 uppercase font-black">Phone</p>
-                                <p className="text-md font-bold text-purple-900">{selectedRider.phone}</p>
-                            </div>
-                            <div className="bg-orange-50 p-3 rounded-2xl">
-                                <p className="text-[10px] text-orange-400 uppercase font-black">Bike Model</p>
-                                <p className="text-md font-bold text-orange-900">{selectedRider.bikeModel}</p>
-                            </div>
+                        <div className="grid grid-cols-2 gap-6 mt-6">
+                            <div><p className="text-xs text-gray-400 uppercase font-bold">NID</p><p className="text-lg font-semibold">{selectedRider.nid}</p></div>
+                            <div><p className="text-xs text-gray-400 uppercase font-bold">License</p><p className="text-lg font-semibold">{selectedRider.license}</p></div>
+                            <div><p className="text-xs text-gray-400 uppercase font-bold">Bike Model</p><p className="text-lg font-semibold">{selectedRider.bikeModel}</p></div>
+                            <div><p className="text-xs text-gray-400 uppercase font-bold">Current Status</p><p className="text-lg font-bold text-blue-600 uppercase">{selectedRider.status}</p></div>
                         </div>
-
-                        <div className="mt-6 border p-4 rounded-2xl">
-                             <h4 className="font-bold text-[#0D2A38] mb-2">Registration Info</h4>
-                             <p className="text-sm"><span className="font-semibold">NID:</span> {selectedRider.nid}</p>
-                             <p className="text-sm"><span className="font-semibold">Bike Reg:</span> {selectedRider.bikeReg}</p>
-                        </div>
-
                         <div className="modal-action">
-                            <button onClick={() => setSelectedRider(null)} className="btn bg-[#0D2A38] text-white rounded-xl border-none">Close</button>
+                            <button onClick={() => setSelectedRider(null)} className="btn bg-[#0D2A38] text-white px-8 rounded-xl">Close</button>
                         </div>
                     </div>
                 </div>
