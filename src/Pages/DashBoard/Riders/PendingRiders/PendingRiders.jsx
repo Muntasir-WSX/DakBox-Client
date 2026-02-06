@@ -14,21 +14,23 @@ const PendingRiders = () => {
         queryKey: ['pending-riders'],
         queryFn: async () => {
             const res = await axiosSecure.get('/rider-applications');
-            // Ensure data exists before filtering
             return res.data?.filter(rider => rider.status === 'pending') || [];
         }
     });
 
     // Mutation for Approving Rider
     const approveMutation = useMutation({
-        mutationFn: async (id) => {
-            const res = await axiosSecure.patch(`/rider-applications/approve/${id}`);
+        mutationFn: async ({ id, email }) => {
+            const res = await axiosSecure.patch(`/rider-applications/approve/${id}`, { email });
             return res.data;
         },
         onSuccess: () => {
             queryClient.invalidateQueries(['pending-riders']);
-            queryClient.invalidateQueries(['all-riders-manage']); // Refresh active list too
-            Swal.fire("Approved!", "Rider is now active.", "success");
+            queryClient.invalidateQueries(['all-riders-manage']); 
+            Swal.fire("Approved!", "Rider is now active and role updated.", "success");
+        },
+        onError: (error) => {
+            Swal.fire("Error!", error.response?.data?.message || "Approval failed", "error");
         }
     });
 
@@ -44,17 +46,21 @@ const PendingRiders = () => {
         }
     });
 
-    const handleApprove = (id) => {
+    // ফিক্সড ফাংশন: এখানে 'rider' অবজেক্ট রিসিভ করা হচ্ছে
+    const handleApprove = (rider) => {
         Swal.fire({
             title: "Approve Rider?",
-            text: "This rider will be moved to the active list.",
+            text: `Confirming ${rider.email} as an active rider.`,
             icon: "question",
             showCancelButton: true,
             confirmButtonColor: "#D4E96D",
             cancelButtonColor: "#d33",
             confirmButtonText: "Yes, Approve!"
         }).then((result) => {
-            if (result.isConfirmed) approveMutation.mutate(id);
+            if (result.isConfirmed) {
+                // এখানে সঠিক ভাবে id এবং email পাঠানো হচ্ছে
+                approveMutation.mutate({ id: rider._id, email: rider.email });
+            }
         });
     };
 
@@ -75,7 +81,7 @@ const PendingRiders = () => {
     if (isLoading) return <div className="flex justify-center p-10"><span className="loading loading-dots loading-lg text-[#D4E96D]"></span></div>;
 
     return (
-        <div className="bg-white p-6 rounded-3xl shadow-sm min-h-[400px]">
+        <div className="bg-white p-6 rounded-3xl shadow-sm min-h-100">
             <h2 className="text-2xl font-bold mb-6 text-[#0D2A38]">Pending Rider Applications</h2>
             
             <div className="overflow-x-auto w-full">
@@ -119,9 +125,15 @@ const PendingRiders = () => {
                                         <button onClick={() => setSelectedRider(rider)} className="btn btn-square btn-sm bg-blue-100 text-blue-600 border-none hover:bg-blue-200">
                                             <Eye size={18} />
                                         </button>
-                                        <button onClick={() => handleApprove(rider._id)} className="btn btn-square btn-sm bg-[#D4E96D] text-[#0D2A38] border-none hover:bg-[#b8cc56]">
+                                        
+                                        {/* বাটন ক্লিক হ্যান্ডলার আপডেট করা হয়েছে */}
+                                        <button 
+                                            onClick={() => handleApprove(rider)} 
+                                            className="btn btn-square btn-sm bg-[#D4E96D] text-[#0D2A38] border-none hover:bg-[#b8cc56]"
+                                        >
                                             <CheckCircle size={18} />
                                         </button>
+
                                         <button onClick={() => handleDelete(rider._id)} className="btn btn-square btn-sm bg-red-100 text-red-600 border-none hover:bg-red-200">
                                             <Trash2 size={18} />
                                         </button>
