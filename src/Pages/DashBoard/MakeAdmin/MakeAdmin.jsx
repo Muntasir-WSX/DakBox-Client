@@ -13,31 +13,24 @@ const MakeAdmin = () => {
     const { user, loading: authLoading } = useAuth(); 
 
     const fetchUsers = async (searchTerm = "") => {
-    // যদি ইউজার অবজেক্ট না থাকে অথবা ইমেইল না থাকে, রিকোয়েস্ট পাঠাবেন না
-    if (!user || !user.email) {
-        return;
-    }
+   if (authLoading || !user?.email) return;
 
     setLoading(true);
     try {
-        // searchTerm যদি খালি থাকে তবে query param পাঠানোর দরকার নেই
+       
         const url = searchTerm ? `/users/admin-list?email=${searchTerm}` : `/users/admin-list`;
         const res = await axiosSecure.get(url);
         setUsers(res.data);
     } catch (error) {
-        // এখানে error হ্যান্ডলিং আগের মতোই থাকবে
+        console.error("Fetch Error:", error);
     } finally {
         setLoading(false);
     }
 };
-    useEffect(() => {
-    // ১. যদি অথ লোডিং চলতে থাকে, তবে থামুন
-    // ২. যদি ইউজার না থাকে, তবে থামুন
-    if (authLoading || !user?.email) {
-        return;
+ useEffect(() => {
+    if (!authLoading && user?.email) {
+        fetchUsers();
     }
-    
-    fetchUsers();
 }, [user?.email, authLoading]);
 
     const handleSearch = (e) => {

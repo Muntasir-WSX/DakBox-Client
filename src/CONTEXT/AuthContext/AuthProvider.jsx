@@ -10,6 +10,7 @@ import {
     updateProfile 
 } from 'firebase/auth';
 import { auth } from '../../Firebase/Firebase.init';
+import axios from 'axios';
 
 const googleProvider = new GoogleAuthProvider();
 
@@ -44,6 +45,24 @@ const AuthProvider = ({ children }) => {
         });
     }
 
+    const [userRole, setUserRole] = useState(null);
+const [roleLoading, setRoleLoading] = useState(true);
+
+useEffect(() => {
+    if (user?.email) {
+        setRoleLoading(true);
+        axios.get(`${import.meta.env.VITE_API_URL}/user-role?email=${user.email}`, {
+            headers: { authorization: `Bearer ${localStorage.getItem('access-token')}` }
+        })
+        .then(res => {
+            setUserRole(res.data.role);
+            setRoleLoading(false);
+        })
+    } else {
+        setRoleLoading(false);
+    }
+}, [user]);
+
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, currentUser => {
             setUser(currentUser);
@@ -58,6 +77,8 @@ const AuthProvider = ({ children }) => {
 
     const authInfo = {
         user,
+        userRole,
+        roleLoading,
         loading,
         createuser,
         signIn,
