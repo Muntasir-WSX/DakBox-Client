@@ -4,7 +4,7 @@ import riderImg from "../../assets/agent-pending.png";
 import useAuth from '../../Hooks/useAuth';
 import useAxiosSecure from '../../Hooks/useAxiosSecure';
 import divisions from '../../../data/division.json';
-import warehouses from '../../../data/warehouses.json';
+import { warehouseData as warehouses } from '../../Data/WareHouse';
 import { Helmet } from 'react-helmet-async';
 import Swal from 'sweetalert2';
 
@@ -14,7 +14,7 @@ const BeARider = () => {
     const [filteredDistricts, setFilteredDistricts] = useState([]);
     
     const { register, handleSubmit, watch, setValue, reset, formState: { errors } } = useForm({
-        // ডিফল্ট ভ্যালু হিসেবে ইউজারের নাম ও ইমেইল সেট করে দেওয়া হলো
+        
         defaultValues: {
             name: user?.displayName || "", 
             email: user?.email || "" 

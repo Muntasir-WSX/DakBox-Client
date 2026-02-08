@@ -6,10 +6,8 @@ import { FormInput, FormSelect, FormTextArea } from "./FormComponents";
 import useAuth from "../../Hooks/useAuth";
 import useAxiosSecure from "../../Hooks/useAxiosSecure";
 import { Helmet } from "react-helmet-async";
-
-// সঠিক পাথ অনুযায়ী ইমপোর্ট (তোর দেওয়া পাথ অনুযায়ী)
 import divisions from '../../../data/division.json';
-import warehouses from '../../../data/warehouses.json';
+import { warehouseData as warehouses } from '../../Data/WareHouse.js';
 
 const SendParcel = () => {
   const { user } = useAuth();
@@ -102,6 +100,8 @@ const SendParcel = () => {
           bookingDate: new Date().toISOString(),
           totalCharge: deliveryCharge,
           status: "pending",
+          riderEmail: "",   
+        deliveredDate: "",
           userEmail: user?.email || "guest",
           userName: user?.displayName || "Anonymous",
         };

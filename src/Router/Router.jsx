@@ -21,6 +21,7 @@ import Error from "../Pages/Error/Error";
 import Services from "../Pages/FullHome/Home/Services/Services";
 import MakeAdmin from "../Pages/DashBoard/MakeAdmin/MakeAdmin";
 import AdminRoute from "../Routes/AdminRoute";
+import ManageAllParcels from "../Pages/DashBoard/Admin/ManageAllParcels/ManageAllParcels";
 
 
 export const router = createBrowserRouter([
@@ -85,7 +86,7 @@ export const router = createBrowserRouter([
         Component: PaymentHistory
       },
       {
-        path: 'track-package',
+        path: 'track-parcel',
         Component:TrackPackage
       },
       {
@@ -100,6 +101,11 @@ export const router = createBrowserRouter([
         path: 'active-riders',
         element: <AdminRoute><ActiveRiders></ActiveRiders></AdminRoute>
       },
+
+      {
+        path: 'manage-admin',
+        element: <AdminRoute><ManageAllParcels></ManageAllParcels></AdminRoute>
+      }
     ]
   },
 

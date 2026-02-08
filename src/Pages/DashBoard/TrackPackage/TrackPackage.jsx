@@ -42,14 +42,14 @@ const TrackPackage = () => {
     return (
         <div className="min-h-screen bg-[#F8FAFC] p-4 md:p-8 font-urbanist">
             <Helmet>
-                <title>DakBox | Track Your Consignment</title>
+                <title>DakBox | Track Parcel</title>
             </Helmet>
 
             <div className="max-w-6xl mx-auto">
                 {/* Header & Search Section */}
                 <div className="mb-10 text-center md:text-left">
                     <h2 className="text-3xl md:text-4xl font-black text-[#0D2A38] uppercase tracking-tight">
-                        Track Your <span className="text-[#D9F26B] bg-[#0D2A38] px-2 rounded">Consignment</span>
+                        Track Your <span className="text-[#D9F26B] bg-[#0D2A38] px-2 rounded">Parcel</span>
                     </h2>
                     <p className="text-gray-500 mt-2 font-medium">Get real-time updates of your parcel using Tracing ID</p>
 
