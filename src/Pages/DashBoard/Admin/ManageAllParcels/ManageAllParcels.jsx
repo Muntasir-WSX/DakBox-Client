@@ -16,8 +16,6 @@ const ManageAllParcels = () => {
 
   const totalPages = Math.ceil(totalParcels / itemsPerPage);
   const pageNumbers = [...Array(totalPages).keys()].map((n) => n + 1);
-
-  // ১. পার্সেল ফেচ করার জন্য useEffect
   useEffect(() => {
     const fetchParcels = async () => {
       try {
@@ -30,8 +28,6 @@ const ManageAllParcels = () => {
     };
     fetchParcels();
   }, [currentPage, axiosSecure]);
-
-  // ২. রাইডার ফেচ করার জন্য আলাদা useEffect (যাতে পেজ চেঞ্জ হলেও বারবার রাইডার ফেচ না হয়)
   useEffect(() => {
     const fetchRiders = async () => {
       try {

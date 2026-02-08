@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Eye, ShieldAlert, BadgeCheck, X, UserCheck, Trash2 } from 'lucide-react'; 
+import { Eye, ShieldAlert, BadgeCheck, X, UserCheck, Trash2, MessageSquareText } from 'lucide-react'; 
 import Swal from 'sweetalert2';
 import useAxiosSecure from '../../../../../Hooks/useAxiosSecure';
+import AdminActionRidersReview from '../../ManageAllParcels/AdminActionRidersRivew';
 
 const ActiveRiders = () => {
     const axiosSecure = useAxiosSecure();
     const queryClient = useQueryClient();
     const [selectedRider, setSelectedRider] = useState(null);
+    const [openReviewModal, setOpenReviewModal] = useState(null);
 
     // Fetch Active & Blocked Riders (Exclude Pending)
     const { data: riders = [], isLoading } = useQuery({
@@ -32,8 +34,6 @@ const ActiveRiders = () => {
             Swal.fire("Success!", data.message || "Status updated successfully", "success");
         }
     });
-
-    // --- নতুন: Delete Rider Mutation ---
     const deleteRiderMutation = useMutation({
         mutationFn: async (id) => {
             const res = await axiosSecure.delete(`/rider-applications/${id}`);
@@ -64,7 +64,7 @@ const ActiveRiders = () => {
         });
     };
 
-    // --- নতুন: Handle Delete ---
+   // Handle Delete ---
     const handleDeleteRider = (id) => {
         Swal.fire({
             title: "Remove Rider Permanently?",
@@ -146,8 +146,10 @@ const ActiveRiders = () => {
                                             <button onClick={() => setSelectedRider(rider)} className="btn btn-square btn-sm bg-gray-100 text-gray-600 border-none hover:bg-gray-200">
                                                 <Eye size={18} />
                                             </button>
+                                            <button onClick={() => setOpenReviewModal(rider)} className="btn btn-square btn-sm bg-[#D4E96D]/20 text-[#0D2A38] border-none hover:bg-[#D4E96D]" title="View Performance">
+                                             <MessageSquareText size={18} />
+                                            </button>
                                             
-                                            {/* নতুন: ডিলিট বাটন */}
                                             <button 
                                                 onClick={() => handleDeleteRider(rider._id)} 
                                                 className="btn btn-square btn-sm bg-red-100 text-red-600 border-none hover:bg-red-200"
@@ -183,6 +185,13 @@ const ActiveRiders = () => {
                         </div>
                     </div>
                 </div>
+            )}
+            {openReviewModal && (
+                <AdminActionRidersReview 
+                    riderEmail={openReviewModal.email}
+                    riderName={openReviewModal.name}
+                    setOpenReviewModal={setOpenReviewModal}
+                />
             )}
         </div>
     );
