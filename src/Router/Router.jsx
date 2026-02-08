@@ -20,6 +20,7 @@ import PendingRiders from "../Pages/DashBoard/Riders/PendingRiders/PendingRiders
 import Error from "../Pages/Error/Error";
 import Services from "../Pages/FullHome/Home/Services/Services";
 import MakeAdmin from "../Pages/DashBoard/MakeAdmin/MakeAdmin";
+import AdminRoute from "../Routes/AdminRoute";
 
 
 export const router = createBrowserRouter([
@@ -89,20 +90,16 @@ export const router = createBrowserRouter([
       },
       {
         path: 'make-admin',
-        Component:MakeAdmin
+        element:<AdminRoute><MakeAdmin></MakeAdmin></AdminRoute>
       },
       {
         path: 'pending-riders',
-        Component:PendingRiders
+        element: <AdminRoute><PendingRiders></PendingRiders></AdminRoute>
       },
       {
         path: 'active-riders',
-        Component:ActiveRiders
+        element: <AdminRoute><ActiveRiders></ActiveRiders></AdminRoute>
       },
-      {
-        path: 'pending-riders',
-        Component:PendingRiders
-      }
     ]
   },
 

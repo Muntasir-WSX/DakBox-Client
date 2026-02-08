@@ -4,14 +4,23 @@ import DakBox from '../../Pages/SharedCopmponents/DakBoxLogo/DakBox';
 import { Bike, ClipboardList, History, Home, Package, PlusCircle, TrainTrack, TruckIcon, UserCog, UserRoundCog } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { FaUserClock } from 'react-icons/fa';
+import useRole from '../../Hooks/useRole';
+import Loading from '../../Pages/SharedCopmponents/Loading/Loading';
+
+
 
 const DashBoardLayout = () => {
+
+
+    const [role, isRoleLoading] = useRole();
+    if (isRoleLoading)
+        return <Loading></Loading>;
     return (
         <div className="drawer lg:drawer-open" style={{ fontFamily: "'Urbanist', sans-serif" }}>
             <input id="my-drawer-2" type="checkbox" className="drawer-toggle" />
-             <Helmet>
+            <Helmet>
                     <title>DakBox | Dashboard</title>
-                  </Helmet>
+            </Helmet>
             <div className="drawer-content flex flex-col bg-gray-50">
                 {/* Mobile Navbar */}
                 <div className="navbar bg-[#0D2A38] text-white w-full lg:hidden border-b border-gray-700">
@@ -38,8 +47,10 @@ const DashBoardLayout = () => {
                     {/* Brand Branding */}
                     <div className="mb-12 border-b border-gray-700 pb-6">
                         <h2 className="text-4xl font-black text-[#D4E96D] tracking-tighter"><DakBox></DakBox></h2>
-                        <p className="text-xs text-gray-400 mt-1 font-medium tracking-widest">USER PANEL</p>
+                        <p className="text-xs text-gray-400 mt-1 font-medium tracking-widest">{role} Panel</p>
                     </div>
+
+                     {/* User routes   */}
 
                     <li>
                         <Link to="/dashboard/myparcels" className="flex items-center gap-3 text-lg font-semibold hover:bg-white/10 rounded-xl py-3 px-5 transition-all active:scale-95">
@@ -62,7 +73,15 @@ const DashBoardLayout = () => {
                                 <TruckIcon size={22} /> <span>Track A Package</span>
                             </Link>
                         </li>
-                        <li>
+
+                        {/* User routes   */}
+
+                        {/* Admin Routes */}
+
+                        { role === "admin" && (
+                          
+                          <>
+                                 <li>
                             <Link to="/dashboard/active-riders" className="flex items-center gap-3 text-lg font-semibold hover:bg-white/10 rounded-xl py-3 px-5 transition-all active:scale-95">
                                 <Bike size={22} /> <span>Active Riders</span>
                             </Link>
@@ -78,6 +97,13 @@ const DashBoardLayout = () => {
                                 <UserRoundCog size={22} /> <span>Make Admin</span>
                             </Link>
                         </li>
+                          </>
+                
+                        )}
+                       
+
+
+                        {/* Admin Routes */}
                     
                     <div className="pt-10">
                         <li>
