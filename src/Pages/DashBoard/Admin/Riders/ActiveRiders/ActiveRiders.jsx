@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Eye, ShieldAlert, BadgeCheck, X, UserCheck, Trash2 } from 'lucide-react'; // Trash2 যোগ করা হয়েছে
+import { Eye, ShieldAlert, BadgeCheck, X, UserCheck, Trash2 } from 'lucide-react'; 
 import Swal from 'sweetalert2';
-import useAxiosSecure from '../../../../Hooks/useAxiosSecure';
+import useAxiosSecure from '../../../../../Hooks/useAxiosSecure';
 
 const ActiveRiders = () => {
     const axiosSecure = useAxiosSecure();

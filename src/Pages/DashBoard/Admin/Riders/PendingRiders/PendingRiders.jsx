@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Eye, CheckCircle, Trash2, X } from 'lucide-react';
 import Swal from 'sweetalert2';
-import useAxiosSecure from '../../../../Hooks/useAxiosSecure';
+import useAxiosSecure from '../../../../../Hooks/useAxiosSecure';
 
 const PendingRiders = () => {
     const axiosSecure = useAxiosSecure();
@@ -126,7 +126,6 @@ const PendingRiders = () => {
                                             <Eye size={18} />
                                         </button>
                                         
-                                        {/* বাটন ক্লিক হ্যান্ডলার আপডেট করা হয়েছে */}
                                         <button 
                                             onClick={() => handleApprove(rider)} 
                                             className="btn btn-square btn-sm bg-[#D4E96D] text-[#0D2A38] border-none hover:bg-[#b8cc56]"

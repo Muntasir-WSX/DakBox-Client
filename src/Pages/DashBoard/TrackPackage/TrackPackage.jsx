@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Package, MapPin, Phone, Calendar, CheckCircle2, Circle, AlertCircle } from 'lucide-react';
+import { Search, Package, MapPin, Phone, Calendar, CheckCircle2, AlertCircle, Clock } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import useAxiosSecure from '../../../Hooks/useAxiosSecure';
 import Loading from '../../SharedCopmponents/Loading/Loading';
@@ -11,8 +11,7 @@ const TrackPackage = () => {
     const [tracingId, setTracingId] = useState('');
     const axiosSecure = useAxiosSecure();
 
-    // 1. Fetch Basic Parcel Info
-    const { data: parcel, isLoading: parcelLoading, isError: parcelError } = useQuery({
+    const { data: parcel, isLoading: parcelLoading } = useQuery({
         queryKey: ['parcel-track', tracingId],
         enabled: !!tracingId,
         queryFn: async () => {
@@ -22,8 +21,7 @@ const TrackPackage = () => {
         retry: false,
     });
 
-    // 2. Fetch Tracking Timeline Updates
-    const { data: updates = [], isLoading: updatesLoading } = useQuery({
+    const { data: updates = [] } = useQuery({
         queryKey: ['tracking-updates', tracingId],
         enabled: !!tracingId && !!parcel,
         queryFn: async () => {
@@ -34,35 +32,29 @@ const TrackPackage = () => {
 
     const handleSearch = (e) => {
         e.preventDefault();
-        if (searchId.trim()) {
-            setTracingId(searchId.trim());
-        }
+        if (searchId.trim()) setTracingId(searchId.trim());
     };
 
     return (
         <div className="min-h-screen bg-[#F8FAFC] p-4 md:p-8 font-urbanist">
-            <Helmet>
-                <title>DakBox | Track Parcel</title>
-            </Helmet>
+            <Helmet><title>DakBox | Track Parcel</title></Helmet>
 
             <div className="max-w-6xl mx-auto">
-                {/* Header & Search Section */}
-                <div className="mb-10 text-center md:text-left">
-                    <h2 className="text-3xl md:text-4xl font-black text-[#0D2A38] uppercase tracking-tight">
+                {/* Search Section */}
+                <div className="mb-10 text-center">
+                    <h2 className="text-3xl md:text-4xl font-black text-[#0D2A38] uppercase">
                         Track Your <span className="text-[#D9F26B] bg-[#0D2A38] px-2 rounded">Parcel</span>
                     </h2>
-                    <p className="text-gray-500 mt-2 font-medium">Get real-time updates of your parcel using Tracing ID</p>
-
-                    <form onSubmit={handleSearch} className="mt-8 flex max-w-lg mx-auto md:mx-0 relative">
+                    <form onSubmit={handleSearch} className="mt-8 flex max-w-lg mx-auto relative">
                         <input
                             type="text"
-                            placeholder="Enter Tracing ID (e.g. 1-ABC-1234)"
-                            className="w-full px-6 py-4 rounded-2xl bg-white border-2 border-gray-100 focus:border-[#D9F26B] outline-none shadow-sm transition-all pr-32 font-bold"
+                            placeholder="Enter Tracing ID"
+                            className="w-full px-6 py-4 rounded-2xl bg-white border-2 border-gray-100 focus:border-[#D9F26B] outline-none shadow-sm font-bold"
                             value={searchId}
                             onChange={(e) => setSearchId(e.target.value)}
                         />
-                        <button type="submit" className="absolute right-2 top-2 bottom-2 bg-[#D9F26B] text-[#0D2A38] font-black px-6 rounded-xl flex items-center gap-2 hover:bg-[#0D2A38] hover:text-[#D9F26B] transition-all active:scale-95">
-                            <Search size={18} /> <span className="hidden sm:inline">Search</span>
+                        <button type="submit" className="absolute right-2 top-2 bottom-2 bg-[#D9F26B] text-[#0D2A38] font-black px-6 rounded-xl hover:bg-[#0D2A38] hover:text-[#D9F26B] transition-all">
+                            <Search size={18} />
                         </button>
                     </form>
                 </div>
@@ -72,107 +64,81 @@ const TrackPackage = () => {
                         <Loading key="loading" />
                     ) : tracingId && parcel ? (
                         <motion.div 
-                            key="content"
-                            initial={{ opacity: 0, y: 20 }} 
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -20 }}
+                            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
                             className="grid grid-cols-1 lg:grid-cols-12 gap-8"
                         >
-                            {/* Left Side: Product Details */}
-                            <div className="lg:col-span-5 bg-white p-6 md:p-10 rounded-[40px] shadow-xl border border-gray-100">
-                                <h3 className="text-2xl font-black text-[#0D2A38] mb-8 flex items-center gap-3">
-                                    <Package className="text-[#D9F26B] bg-[#0D2A38] p-1.5 rounded-lg" size={32} />
-                                    Parcel Info
+                            {/* Left Side: Parcel Info */}
+                            <div className="lg:col-span-5 bg-white p-8 rounded-[32px] shadow-sm border border-gray-100 h-fit">
+                                <h3 className="text-xl font-black text-[#0D2A38] mb-6 flex items-center gap-2">
+                                    <Package className="text-[#A3B730]" size={24} /> Consignment Details
                                 </h3>
-                                
                                 <div className="space-y-6">
-                                    <div className="flex items-start gap-4">
-                                        <div className="mt-1 text-gray-400"><Calendar size={18}/></div>
+                                    <DetailItem label="Receiver" value={parcel.receiverName} subValue={parcel.receiverAddress} icon={<MapPin size={18}/>} />
+                                    <DetailItem label="Contact" value={parcel.receiverPhone} icon={<Phone size={18}/>} />
+                                    <DetailItem label="Booking Date" value={new Date(parcel.bookingDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' })} icon={<Calendar size={18}/>} />
+                                    
+                                    <div className="pt-4 border-t border-gray-50 flex justify-between items-center">
                                         <div>
-                                            <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Booking Date</p>
-                                            <p className="font-bold text-[#0D2A38]">{new Date(parcel.bookingDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
+                                            <p className="text-[10px] font-black text-gray-400 uppercase">Tracing Code</p>
+                                            <p className="font-mono text-sm font-bold text-blue-600">{parcel.tracingId}</p>
                                         </div>
-                                    </div>
-
-                                    <div className="flex items-start gap-4">
-                                        <div className="mt-1 text-gray-400"><MapPin size={18}/></div>
-                                        <div>
-                                            <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Receiver & Address</p>
-                                            <p className="font-bold text-[#0D2A38]">{parcel.receiverName}</p>
-                                            <p className="text-sm text-gray-500 font-medium">{parcel.deliveryAddress}</p>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex items-start gap-4">
-                                        <div className="mt-1 text-gray-400"><Phone size={18}/></div>
-                                        <div>
-                                            <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Receiver Contact</p>
-                                            <p className="font-bold text-[#0D2A38]">{parcel.receiverPhone}</p>
-                                        </div>
-                                    </div>
-
-                                    <div className="pt-6 border-t border-gray-50 grid grid-cols-2 gap-4">
-                                        <div>
-                                            <p className="text-[10px] font-black uppercase text-gray-400">Current Status</p>
-                                            <p className={`font-black uppercase text-xs mt-1 px-3 py-1 rounded-full inline-block ${
-                                                parcel.status === 'pending' ? 'bg-orange-50 text-orange-500' : 
-                                                parcel.status === 'paid' ? 'bg-green-50 text-green-600' : 
-                                                'bg-blue-50 text-blue-500'
-                                            }`}>
-                                                {parcel.status}
-                                            </p>
-                                        </div>
-                                        <div>
-                                            <p className="text-[10px] font-black uppercase text-gray-400">Tracing Code</p>
-                                            <p className="font-mono text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-lg mt-1">{parcel.tracingId}</p>
+                                        <div className="text-right">
+                                            <p className="text-[10px] font-black text-gray-400 uppercase">Current Status</p>
+                                            <span className="text-[10px] font-black bg-[#D9F26B] px-2 py-1 rounded uppercase">{parcel.status}</span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Right Side: Tracking Timeline */}
-                            <div className="lg:col-span-7 bg-white p-6 md:p-10 rounded-[40px] shadow-xl border border-gray-100 relative overflow-hidden">
-                                <h3 className="text-2xl font-black text-[#0D2A38] mb-10">Live Journey</h3>
+                            {/* Right Side: Tracking Updates (Image Style) */}
+                            <div className="lg:col-span-7 bg-white p-8 rounded-[32px] shadow-sm border border-gray-100">
+                                <h3 className="text-xl font-black text-[#0D2A38] mb-8">Tracking Updates</h3>
                                 
-                                <div className="relative">
-                                    {/* Vertical Line */}
-                                    <div className="absolute left-2.75 top-2 bottom-2 w-0.5 bg-gray-100"></div>
+                                <div className="relative pl-8">
+                                    {/* The Vertical Line */}
+                                    <div className="absolute left-3.5 top-2 bottom-2 w-[2px] bg-gray-100"></div>
 
-                                    <div className="space-y-10">
-                                        {updates.length > 0 ? updates.map((update, idx) => (
+                                    <div className="space-y-8">
+                                        {updates.map((update, idx) => (
                                             <motion.div 
-                                                initial={{ opacity: 0, x: 20 }}
+                                                key={idx}
+                                                initial={{ opacity: 0, x: -10 }}
                                                 animate={{ opacity: 1, x: 0 }}
                                                 transition={{ delay: idx * 0.1 }}
-                                                key={idx} 
-                                                className="relative flex items-start gap-6"
+                                                className="relative flex items-center justify-between"
                                             >
-                                                {/* Status Dot */}
-                                                <div className="z-10 mt-1">
-                                                    <div className={`w-6 h-6 rounded-full flex items-center justify-center ${idx === 0 ? 'bg-green-500 text-white animate-pulse' : 'bg-gray-200 text-gray-400'}`}>
-                                                        <CheckCircle2 size={16} />
+                                                {/* Timeline Circle */}
+                                                <div className="absolute -left-[29px] bg-white p-1">
+                                                    <div className={`w-5 h-5 rounded-full border-4 flex items-center justify-center ${idx === 0 ? 'border-green-100 bg-green-500' : 'border-gray-50 bg-gray-200'}`}>
+                                                        {idx === 0 && <div className="w-1.5 h-1.5 bg-white rounded-full animate-ping"></div>}
                                                     </div>
                                                 </div>
-                                                
-                                                <div className="flex flex-col md:flex-row md:items-center justify-between w-full gap-2 bg-gray-50 p-4 rounded-2xl border border-gray-100 group hover:border-[#D9F26B] transition-colors">
-                                                    <div>
-                                                        <p className="font-black text-[#0D2A38] text-base leading-tight uppercase tracking-tight">{update.status}</p>
-                                                        <p className="text-gray-500 text-xs font-medium mt-1">{update.message}</p>
-                                                    </div>
-                                                    <div className="md:text-right border-t md:border-t-0 border-gray-200 pt-2 md:pt-0">
-                                                        <p className="text-[10px] font-black text-gray-400 uppercase">
-                                                            {new Date(update.time).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}
-                                                        </p>
-                                                        <p className="text-[10px] font-bold text-gray-400">
-                                                            {new Date(update.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                                        </p>
-                                                    </div>
+
+                                                {/* Content */}
+                                                <div className="flex-1 ml-4">
+                                                    <p className={`font-bold text-sm ${idx === 0 ? 'text-[#0D2A38]' : 'text-gray-400'}`}>
+                                                        {update.status}
+                                                    </p>
+                                                    <p className="text-xs text-gray-500">{update.message}</p>
+                                                </div>
+
+                                                {/* Time */}
+                                                <div className="text-right ml-4">
+                                                    <p className="text-[10px] font-black text-gray-400 uppercase">
+                                                        {new Date(update.time).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
+                                                    </p>
+                                                    <p className="text-[10px] font-bold text-gray-300">
+                                                        {new Date(update.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}
+                                                    </p>
                                                 </div>
                                             </motion.div>
-                                        )) : (
-                                            <div className="flex flex-col items-center justify-center py-10 opacity-30">
-                                                <Circle size={40} className="animate-spin mb-4" />
-                                                <p className="font-black uppercase tracking-widest text-sm">Processing Status...</p>
+                                        ))}
+
+                                        {/* Placeholder for future steps if only assigned */}
+                                        {updates.length === 1 && parcel.status === 'assigned' && (
+                                            <div className="relative flex items-center opacity-20 pl-0">
+                                                 <div className="absolute -left-[25px] w-3 h-3 rounded-full bg-gray-200"></div>
+                                                 <p className="ml-9 text-xs font-bold uppercase tracking-widest">Awaiting Pickup...</p>
                                             </div>
                                         )}
                                     </div>
@@ -180,19 +146,28 @@ const TrackPackage = () => {
                             </div>
                         </motion.div>
                     ) : tracingId && (
-                        <motion.div 
-                            initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                            className="text-center py-20 bg-white rounded-[40px] shadow-sm border-2 border-dashed border-gray-100"
-                        >
+                        <div className="text-center py-20 bg-white rounded-[40px] border-2 border-dashed border-gray-100">
                             <AlertCircle className="mx-auto text-red-400 mb-4" size={48} />
                             <h3 className="text-xl font-black text-[#0D2A38] uppercase">No Consignment Found</h3>
                             <p className="text-gray-400 font-medium">Please check the Tracing ID and try again.</p>
-                        </motion.div>
+                        </div>
                     )}
                 </AnimatePresence>
             </div>
         </div>
     );
 };
+
+// Helper Component for Details
+const DetailItem = ({ label, value, subValue, icon }) => (
+    <div className="flex items-start gap-4">
+        <div className="mt-1 text-[#A3B730] bg-gray-50 p-2 rounded-xl">{icon}</div>
+        <div>
+            <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">{label}</p>
+            <p className="font-bold text-[#0D2A38] text-sm">{value}</p>
+            {subValue && <p className="text-xs text-gray-500 mt-0.5">{subValue}</p>}
+        </div>
+    </div>
+);
 
 export default TrackPackage;

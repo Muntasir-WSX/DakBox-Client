@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Search, ShieldAlert, ShieldCheck } from 'lucide-react';
 import Swal from 'sweetalert2';
-import Loading from '../../SharedCopmponents/Loading/Loading';
-import useAxiosSecure from '../../../Hooks/useAxiosSecure';
-import useAuth from '../../../Hooks/useAuth'; 
+import Loading from '../../../../SharedCopmponents/Loading/Loading';
+import useAxiosSecure from '../../../../../Hooks/useAxiosSecure';
+import useAuth from '../../../../../Hooks/useAuth'; 
 
 const MakeAdmin = () => {
     const [users, setUsers] = useState([]);

@@ -15,13 +15,15 @@ import Payment from "../Pages/DashBoard/PayemtIntegration/Payment";
 import PaymentHistory from "../Pages/DashBoard/PaymentHistory/PaymentHistory";
 import TrackPackage from "../Pages/DashBoard/TrackPackage/TrackPackage";
 import BeARider from "../Pages/BeARider/BeARider";
-import ActiveRiders from "../Pages/DashBoard/Riders/ActiveRiders/ActiveRiders";
-import PendingRiders from "../Pages/DashBoard/Riders/PendingRiders/PendingRiders";
+import ActiveRiders from "../Pages/DashBoard/Admin/Riders/ActiveRiders/ActiveRiders";
+import PendingRiders from "../Pages/DashBoard/Admin/Riders/PendingRiders/PendingRiders";
 import Error from "../Pages/Error/Error";
 import Services from "../Pages/FullHome/Home/Services/Services";
-import MakeAdmin from "../Pages/DashBoard/MakeAdmin/MakeAdmin";
+import MakeAdmin from "../Pages/DashBoard/Admin/MakeAdmin/MakeAdmin";
 import AdminRoute from "../Routes/AdminRoute";
 import ManageAllParcels from "../Pages/DashBoard/Admin/ManageAllParcels/ManageAllParcels";
+import MyDeliveries from "../Pages/DashBoard/Riders/MyDeliveries/MyDeliveries";
+import RiderRoute from "../Routes/RiderRoute";
 
 
 export const router = createBrowserRouter([
@@ -105,7 +107,16 @@ export const router = createBrowserRouter([
       {
         path: 'manage-admin',
         element: <AdminRoute><ManageAllParcels></ManageAllParcels></AdminRoute>
-      }
+      },
+
+      {
+      path: 'assigned-parcels',
+      element: <RiderRoute><MyDeliveries /></RiderRoute>
+    },
+    // {
+    //   path: 'rider-reviews',
+    //   element: <RiderRoute><div>Rider Reviews Component</div></RiderRoute>
+    // },
     ]
   },
 
