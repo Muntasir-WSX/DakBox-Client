@@ -24,6 +24,7 @@ import AdminRoute from "../Routes/AdminRoute";
 import ManageAllParcels from "../Pages/DashBoard/Admin/ManageAllParcels/ManageAllParcels";
 import MyDeliveries from "../Pages/DashBoard/Riders/MyDeliveries/MyDeliveries";
 import RiderRoute from "../Routes/RiderRoute";
+import MyReviews from "../Pages/DashBoard/Riders/MyReviews/MyReviews";
 
 
 export const router = createBrowserRouter([
@@ -113,10 +114,10 @@ export const router = createBrowserRouter([
       path: 'assigned-parcels',
       element: <RiderRoute><MyDeliveries /></RiderRoute>
     },
-    // {
-    //   path: 'rider-reviews',
-    //   element: <RiderRoute><div>Rider Reviews Component</div></RiderRoute>
-    // },
+    {
+      path: 'rider-reviews',
+      element: <RiderRoute><MyReviews></MyReviews></RiderRoute>
+    },
     ]
   },
 

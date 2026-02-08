@@ -57,8 +57,8 @@ const MyDeliveries = () => {
                 <td className="font-bold">{parcel.receiverName}</td>
                 
                 
-                <td className="text-xs max-w-[150px]">{parcel.senderAddress}</td>
-                <td className="text-xs max-w-[150px]">{parcel.receiverAddress}</td>
+                <td className="text-xs max-w-37.5">{parcel.senderAddress}</td>
+                <td className="text-xs max-w-37.5">{parcel.receiverAddress}</td>
                 
                 <td>
                   <span className={`badge border-none py-3 px-3 capitalize ${

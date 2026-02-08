@@ -68,7 +68,7 @@ const TrackPackage = () => {
                             className="grid grid-cols-1 lg:grid-cols-12 gap-8"
                         >
                             {/* Left Side: Parcel Info */}
-                            <div className="lg:col-span-5 bg-white p-8 rounded-[32px] shadow-sm border border-gray-100 h-fit">
+                            <div className="lg:col-span-5 bg-white p-8 rounded-4xl shadow-sm border border-gray-100 h-fit">
                                 <h3 className="text-xl font-black text-[#0D2A38] mb-6 flex items-center gap-2">
                                     <Package className="text-[#A3B730]" size={24} /> Consignment Details
                                 </h3>
@@ -91,12 +91,12 @@ const TrackPackage = () => {
                             </div>
 
                             {/* Right Side: Tracking Updates (Image Style) */}
-                            <div className="lg:col-span-7 bg-white p-8 rounded-[32px] shadow-sm border border-gray-100">
+                            <div className="lg:col-span-7 bg-white p-8 rounded-4xl shadow-sm border border-gray-100">
                                 <h3 className="text-xl font-black text-[#0D2A38] mb-8">Tracking Updates</h3>
                                 
                                 <div className="relative pl-8">
                                     {/* The Vertical Line */}
-                                    <div className="absolute left-3.5 top-2 bottom-2 w-[2px] bg-gray-100"></div>
+                                    <div className="absolute left-3.5 top-2 bottom-2 w-0.5 bg-gray-100"></div>
 
                                     <div className="space-y-8">
                                         {updates.map((update, idx) => (
@@ -108,7 +108,7 @@ const TrackPackage = () => {
                                                 className="relative flex items-center justify-between"
                                             >
                                                 {/* Timeline Circle */}
-                                                <div className="absolute -left-[29px] bg-white p-1">
+                                                <div className="absolute -left-7.25 bg-white p-1">
                                                     <div className={`w-5 h-5 rounded-full border-4 flex items-center justify-center ${idx === 0 ? 'border-green-100 bg-green-500' : 'border-gray-50 bg-gray-200'}`}>
                                                         {idx === 0 && <div className="w-1.5 h-1.5 bg-white rounded-full animate-ping"></div>}
                                                     </div>
@@ -137,7 +137,7 @@ const TrackPackage = () => {
                                         {/* Placeholder for future steps if only assigned */}
                                         {updates.length === 1 && parcel.status === 'assigned' && (
                                             <div className="relative flex items-center opacity-20 pl-0">
-                                                 <div className="absolute -left-[25px] w-3 h-3 rounded-full bg-gray-200"></div>
+                                                 <div className="absolute -left-6.25 w-3 h-3 rounded-full bg-gray-200"></div>
                                                  <p className="ml-9 text-xs font-bold uppercase tracking-widest">Awaiting Pickup...</p>
                                             </div>
                                         )}
