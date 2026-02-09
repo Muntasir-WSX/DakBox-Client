@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
-
 import { Helmet } from "react-helmet-async";
 import { Wallet, TrendingUp, Calendar, CheckCircle } from "lucide-react";
-import toast from "react-hot-toast";
 import useAxiosSecure from "../../../../../Hooks/useAxiosSecure";
 import useAuth from "../../../../../Hooks/useAuth";
 
@@ -16,13 +14,10 @@ const MyEarnings = () => {
         const fetchEarnings = async () => {
             try {
                 const res = await axiosSecure.get(`/rider/my-deliveries/${user?.email}`);
-                // শুধুমাত্র 'delivered' পার্সেলগুলো ফিল্টার করা
+                
                 const deliveredParcels = res.data.filter(p => p.status === 'delivered');
                 setDeliveries(deliveredParcels);
-
-                // মোট ইনকাম ক্যালকুলেট করা
                 const total = deliveredParcels.reduce((sum, p) => sum + (p.riderCommission || 0), 0);
-                // আপাতত টোটালকেই ব্যালেন্স ধরছি (ক্যাশআউট সিস্টেম অ্যাড করলে এটা চেঞ্জ হবে)
                 setStats({ total, balance: total });
             } catch (error) {
                 toast.error("Failed to load earnings data");
@@ -30,14 +25,6 @@ const MyEarnings = () => {
         };
         fetchEarnings();
     }, [user?.email, axiosSecure]);
-
-    const handleCashout = () => {
-        if (stats.balance < 500) {
-            return toast.error("Minimum 500 BDT required for cashout!");
-        }
-        toast.success("Cashout request sent to admin!");
-    };
-
     return (
         <div className="p-6 bg-gray-50 min-h-screen">
             <Helmet><title>DakBox | My Earnings</title></Helmet>
@@ -67,16 +54,6 @@ const MyEarnings = () => {
                         </div>
                         <Wallet className="text-blue-500" size={28} />
                     </div>
-                </div>
-
-                <div className="flex flex-col gap-2">
-                    <button 
-                        onClick={handleCashout}
-                        className="btn h-full bg-[#D4E96D] hover:bg-[#c2d950] border-none text-[#0D2A38] font-bold text-lg rounded-2xl shadow-lg"
-                    >
-                        Cashout Money
-                    </button>
-                    <p className="text-[10px] text-center text-gray-400 uppercase font-bold">Min. Withdrawal: ৳500</p>
                 </div>
             </div>
 

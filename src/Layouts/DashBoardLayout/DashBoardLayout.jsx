@@ -2,6 +2,7 @@ import React from "react";
 import { NavLink, Outlet } from "react-router";
 import DakBox from "../../Pages/SharedCopmponents/DakBoxLogo/DakBox";
 import {
+  Banknote,
   Bike,
   ClipboardList,
   History,
@@ -90,6 +91,7 @@ const DashBoardLayout = () => {
               <li><NavLink to="/dashboard/active-riders" className={activeLinkStyle}><Bike size={22} /> Active Riders</NavLink></li>
               <li><NavLink to="/dashboard/pending-riders" className={activeLinkStyle}><FaUserClock size={22} /> Pending Riders</NavLink></li>
               <li><NavLink to="/dashboard/make-admin" className={activeLinkStyle}><UserRoundCog size={22} /> Make Admin</NavLink></li>
+              <li><NavLink to="/dashboard/cashout-requests" className={activeLinkStyle}><Banknote size={22} /> Cashout Requests</NavLink></li>
             </>
           )}
 

@@ -115,15 +115,11 @@ const PaymentForm = () => {
                 {/* Header Area */}
                 <div className="p-8 pb-10">
                     <div className="flex justify-between items-center mb-8">
-                        <h3 className="text-white text-xl font-black uppercase tracking-widest">DakBox Payment</h3>
-                        <div className="bg-white/10 px-3 py-1 rounded-full border border-white/10 flex items-center gap-2">
-                            <div className="w-2 h-2 bg-[#D9F26B] rounded-full animate-pulse"></div>
-                            <span className="text-[#D9F26B] text-[10px] font-black uppercase tracking-widest">Live</span>
-                        </div>
+                        <h3 className="text-white text-2xl font-extrabold tracking-widest">DakBox Payment</h3>
                     </div>
                     <div className="space-y-1">
                         <p className="text-gray-400 text-xs font-bold uppercase tracking-widest opacity-60">Total Payable</p>
-                        <h2 className="text-[#D9F26B] text-5xl font-black italic">৳{parcel?.totalCharge || 0}</h2>
+                        <h2 className="text-[#D9F26B] text-5xl font-black ">৳ {parcel?.totalCharge || 0}</h2>
                     </div>
                 </div>
 

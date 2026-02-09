@@ -27,6 +27,8 @@ import RiderRoute from "../Routes/RiderRoute";
 import MyReviews from "../Pages/DashBoard/Riders/MyReviews/MyReviews";
 import UserRoute from "../Routes/UserRoute";
 import MyEarnings from "../Pages/DashBoard/Admin/Riders/MyEarnings/MyEarnings";
+import MyCashout from "../Pages/DashBoard/Admin/Riders/MyCashout/MyCashout";
+import CashoutRequests from "../Pages/DashBoard/Admin/CashoutRequest/CashoutRequest";
 
 
 
@@ -117,6 +119,10 @@ export const router = createBrowserRouter([
         path: 'manage-admin',
         element: <AdminRoute><ManageAllParcels></ManageAllParcels></AdminRoute>
       },
+      {
+        path: "cashout-requests",
+        element: <AdminRoute><CashoutRequests></CashoutRequests></AdminRoute>
+      },
 
       {
       path: 'assigned-parcels',
@@ -130,10 +136,10 @@ export const router = createBrowserRouter([
       path: "my-earnings",
       element: <RiderRoute><MyEarnings></MyEarnings></RiderRoute>
     },
-    // {
-    //   path: "cashout",
-    //   element:<RiderRoute></RiderRoute>
-    // }
+    {
+      path: "cashout",
+      element:<RiderRoute><MyCashout></MyCashout></RiderRoute>
+    }
     ]
   },
 
