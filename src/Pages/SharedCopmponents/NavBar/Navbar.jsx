@@ -4,9 +4,11 @@ import DakBox from "../DakBoxLogo/DakBox";
 import { MoveUpRight, Menu, LogOut } from "lucide-react"; 
 import useAuth from "../../../Hooks/useAuth"; 
 import toast from "react-hot-toast";
+import useRole from "../../../Hooks/useRole";
 
 const Navbar = () => {
   const { user, logOut } = useAuth(); 
+  const [role, isRoleLoading] = useRole();
 
   const handleLogOut = () => {
     logOut()
@@ -27,18 +29,27 @@ const Navbar = () => {
   const navItems = (
     <>
       <li><NavLink to="/" className={navLinkStyles}>Home</NavLink></li>
+      <li><NavLink to="/dashboard" className={navLinkStyles}>My DashBoard</NavLink></li>
       {user && (
         <>
           
-          <li><NavLink to="/dashboard" className={navLinkStyles}>My DashBoard</NavLink></li>
+         
           
         </>
       )}
-      <li><NavLink to="/send-parcel" className={navLinkStyles}>Send Parcel</NavLink></li>
-      <li><NavLink to="/services" className={navLinkStyles}>Services</NavLink></li>
-      <li><NavLink to="/coverage" className={navLinkStyles}>Coverage</NavLink></li>
-      <li><NavLink to="/be-a-rider" className={navLinkStyles}>Be a Rider</NavLink></li>
-      <li><NavLink to="/aboutUs" className={navLinkStyles}>About Us</NavLink></li>
+      {role !== 'admin' && (
+        <>
+          <li><NavLink to="/send-parcel" className={navLinkStyles}>Send Parcel</NavLink></li>
+          <li><NavLink to="/services" className={navLinkStyles}>Services</NavLink></li>
+          <li><NavLink to="/coverage" className={navLinkStyles}>Coverage</NavLink></li>
+          <li><NavLink to="/be-a-rider" className={navLinkStyles}>Be a Rider</NavLink></li>
+          <li><NavLink to="/aboutUs" className={navLinkStyles}>About Us</NavLink></li>
+        </>
+      )}
+
+      {role === 'admin' && (
+        <li><NavLink to="/aboutUs" className={navLinkStyles}>About Us</NavLink></li>
+      )}
     </>
   );
 

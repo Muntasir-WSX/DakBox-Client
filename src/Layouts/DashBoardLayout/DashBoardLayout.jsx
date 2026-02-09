@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, Outlet } from "react-router";
+import { NavLink, Outlet } from "react-router";
 import DakBox from "../../Pages/SharedCopmponents/DakBoxLogo/DakBox";
 import {
   Bike,
@@ -8,7 +8,6 @@ import {
   Home,
   Package,
   PlusCircle,
-  TrainTrack,
   TruckIcon,
   UserCog,
   UserRoundCog,
@@ -17,11 +16,20 @@ import { Helmet } from "react-helmet-async";
 import { FaUserClock } from "react-icons/fa";
 import useRole from "../../Hooks/useRole";
 import Loading from "../../Pages/SharedCopmponents/Loading/Loading";
-import { FcManager } from "react-icons/fc";
 
 const DashBoardLayout = () => {
   const [role, isRoleLoading] = useRole();
+
   if (isRoleLoading) return <Loading></Loading>;
+
+  // একটি কমন ফাংশন যা একটিভ থাকলে গ্রিন কালার এবং না থাকলে হোয়াইট টেক্সট দেখাবে
+  const activeLinkStyle = ({ isActive }) =>
+    `flex items-center gap-3 text-lg font-semibold rounded-xl py-3 px-5 transition-all active:scale-95 ${
+      isActive
+        ? "bg-[#D4E96D] text-[#0D2A38]" // একটিভ থাকলে গ্রিন ব্যাকগ্রাউন্ড
+        : "text-white hover:bg-white/10" // নরমাল অবস্থায় হোয়াইট টেক্সট
+    }`;
+
   return (
     <div
       className="drawer lg:drawer-open"
@@ -31,33 +39,21 @@ const DashBoardLayout = () => {
       <Helmet>
         <title>DakBox | Dashboard</title>
       </Helmet>
+      
       <div className="drawer-content flex flex-col bg-gray-50">
         {/* Mobile Navbar */}
         <div className="navbar bg-[#0D2A38] text-white w-full lg:hidden border-b border-gray-700">
           <div className="flex-none">
             <label
               htmlFor="my-drawer-2"
-              aria-label="open sidebar"
               className="btn btn-square btn-ghost"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                className="inline-block h-6 w-6 stroke-current"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M4 6h16M4 12h16M4 18h16"
-                ></path>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="inline-block h-6 w-6 stroke-current">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path>
               </svg>
             </label>
           </div>
-          <div className="mx-2 flex-1 px-2 font-bold text-[#D4E96D] tracking-wider">
-            DakBox Dashboard
-          </div>
+          <div className="mx-2 flex-1 px-2 font-bold text-[#D4E96D]">DakBox Dashboard</div>
         </div>
 
         {/* Main Page Content */}
@@ -67,153 +63,62 @@ const DashBoardLayout = () => {
       </div>
 
       <div className="drawer-side">
-        <label
-          htmlFor="my-drawer-2"
-          aria-label="close sidebar"
-          className="drawer-overlay"
-        ></label>
+        <label htmlFor="my-drawer-2" className="drawer-overlay"></label>
 
-        <ul className="menu bg-[#0D2A38] text-white min-h-full w-80 p-8 space-y-4">
-          {/* Brand Branding */}
-          <div className="mb-12 border-b border-gray-700 pb-6">
-            <h2 className="text-4xl font-black text-[#D4E96D] tracking-tighter">
-              <DakBox></DakBox>
+        <ul className="menu bg-[#0D2A38] text-white min-h-full w-80 p-8 space-y-2">
+          {/* Branding */}
+          <div className="mb-8 border-b border-gray-700 pb-6">
+            <h2 className="text-4xl font-black text-[#D4E96D]">
+              <DakBox />
             </h2>
-            <p className="text-xs text-gray-400 mt-1 font-medium tracking-widest">
+            <p className="text-[10px] bg-[#D4E96D]/10 text-[#D4E96D] mt-2 py-1 px-3 rounded-full w-fit font-bold uppercase tracking-widest">
               {role} Panel
             </p>
           </div>
 
-          {/* User routes   */}
-
-            {role === "user" && (
-                <>
-                
-                 <li>
-            <Link
-              to="/dashboard/myparcels"
-              className="flex items-center gap-3 text-lg font-semibold hover:bg-white/10 rounded-xl py-3 px-5 transition-all active:scale-95"
-            >
-              <Package size={22} /> <span>My Parcels</span>
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/send-parcel"
-              className="flex items-center gap-3 text-lg font-semibold hover:bg-white/10 rounded-xl py-3 px-5 transition-all active:scale-95"
-            >
-              <PlusCircle size={22} /> <span>Send Parcel</span>
-            </Link>
-          </li>
-
-          <li>
-            <Link
-              to="/dashboard/payment-history"
-              className="flex items-center gap-3 text-lg font-semibold hover:bg-white/10 rounded-xl py-3 px-5 transition-all active:scale-95"
-            >
-              <History size={22} /> <span>My Payment History</span>
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/dashboard/track-parcel"
-              className="flex items-center gap-3 text-lg font-semibold hover:bg-white/10 rounded-xl py-3 px-5 transition-all active:scale-95"
-            >
-              <TruckIcon size={22} /> <span>Track Your Parcels</span>
-            </Link>
-          </li>
-                
+          {/* User Routes */}
+          {role === "user" && (
+            <>
+              <li><NavLink to="/dashboard/myparcels" className={activeLinkStyle}><Package size={22} /> My Parcels</NavLink></li>
+              <li><NavLink to="/send-parcel" className={activeLinkStyle}><PlusCircle size={22} /> Send Parcel</NavLink></li>
+              <li><NavLink to="/dashboard/payment-history" className={activeLinkStyle}><History size={22} /> Payment History</NavLink></li>
+              <li><NavLink to="/dashboard/track-parcel" className={activeLinkStyle}><TruckIcon size={22} /> Track Parcel</NavLink></li>
             </>
+          )}
 
-            )}
-         
-
-          {/* User routes end   */}
-
-          {/* Admin Routes start*/}
-
+          {/* Admin Routes */}
           {role === "admin" && (
             <>
-
-            <li>
-                <Link
-                  to="/dashboard/manage-admin"
-                  className="flex items-center gap-3 text-lg font-semibold hover:bg-white/10 rounded-xl py-3 px-5 transition-all active:scale-95"
-                >
-                  <ClipboardList size={22} /> <span>Manage All Parcels</span>
-                </Link>
-              </li>
-
-              <li>
-                <Link
-                  to="/dashboard/active-riders"
-                  className="flex items-center gap-3 text-lg font-semibold hover:bg-white/10 rounded-xl py-3 px-5 transition-all active:scale-95"
-                >
-                  <Bike size={22} /> <span>Active Riders</span>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/dashboard/pending-riders"
-                  className="flex items-center gap-3 text-lg font-semibold hover:bg-white/10 rounded-xl py-3 px-5 transition-all active:scale-95"
-                >
-                  <FaUserClock size={22} /> <span>Pending Riders</span>
-                </Link>
-              </li>
-
-              <li>
-                <Link
-                  to="/dashboard/make-admin"
-                  className="flex items-center gap-3 text-lg font-semibold hover:bg-white/10 rounded-xl py-3 px-5 transition-all active:scale-95"
-                >
-                  <UserRoundCog size={22} /> <span>Make Admin</span>
-                </Link>
-              </li>
+              <li><NavLink to="/dashboard/manage-admin" className={activeLinkStyle}><ClipboardList size={22} /> Manage All Parcels</NavLink></li>
+              <li><NavLink to="/dashboard/active-riders" className={activeLinkStyle}><Bike size={22} /> Active Riders</NavLink></li>
+              <li><NavLink to="/dashboard/pending-riders" className={activeLinkStyle}><FaUserClock size={22} /> Pending Riders</NavLink></li>
+              <li><NavLink to="/dashboard/make-admin" className={activeLinkStyle}><UserRoundCog size={22} /> Make Admin</NavLink></li>
             </>
           )}
 
-          {/* Admin Routes start */}
-
-          {/* Rider Routes start */}
+          {/* Rider Routes */}
           {role === "rider" && (
             <>
-              <li>
-                <Link
-                  to="/dashboard/assigned-parcels"
-                  className="flex items-center gap-3 text-lg font-semibold hover:bg-white/10 rounded-xl py-3 px-5 transition-all"
-                >
-                  <ClipboardList size={22} /> <span>My Deliveries</span>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/dashboard/rider-reviews"
-                  className="flex items-center gap-3 text-lg font-semibold hover:bg-white/10 rounded-xl py-3 px-5 transition-all"
-                >
-                  <UserCog size={22} /> <span>My Reviews</span>
-                </Link>
-              </li>
+              <li><NavLink to="/dashboard/assigned-parcels" className={activeLinkStyle}><ClipboardList size={22} /> My Deliveries</NavLink></li>
+              <li><NavLink to="/dashboard/rider-reviews" className={activeLinkStyle}><UserCog size={22} /> My Reviews</NavLink></li>
+              
             </>
           )}
 
-
-          {/* Riders routes end */}
-
-          <div className="pt-10">
+          {/* Bottom Divider & Shared Links */}
+          <div className="pt-8 mt-4 border-t border-gray-700">
             <li>
-              <Link
+              <NavLink
                 to="/"
                 className="flex items-center gap-3 text-lg font-semibold text-[#D4E96D] border border-[#D4E96D]/30 hover:bg-[#D4E96D] hover:text-[#0D2A38] rounded-xl py-3 px-5 transition-all"
               >
                 <Home size={22} /> <span>Back to Home</span>
-              </Link>
+              </NavLink>
             </li>
           </div>
         </ul>
       </div>
-    
     </div>
-
   );
 };
 

@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Eye, CheckCircle, Trash2, X } from 'lucide-react';
 import Swal from 'sweetalert2';
 import useAxiosSecure from '../../../../../Hooks/useAxiosSecure';
+import Loading from '../../../../SharedCopmponents/Loading/Loading';
 
 const PendingRiders = () => {
     const axiosSecure = useAxiosSecure();
@@ -46,7 +47,7 @@ const PendingRiders = () => {
         }
     });
 
-    // ফিক্সড ফাংশন: এখানে 'rider' অবজেক্ট রিসিভ করা হচ্ছে
+    
     const handleApprove = (rider) => {
         Swal.fire({
             title: "Approve Rider?",
@@ -78,7 +79,7 @@ const PendingRiders = () => {
         });
     };
 
-    if (isLoading) return <div className="flex justify-center p-10"><span className="loading loading-dots loading-lg text-[#D4E96D]"></span></div>;
+    if (isLoading) return <Loading></Loading>
 
     return (
         <div className="bg-white p-6 rounded-3xl shadow-sm min-h-100">

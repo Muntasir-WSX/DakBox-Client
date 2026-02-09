@@ -25,6 +25,8 @@ import ManageAllParcels from "../Pages/DashBoard/Admin/ManageAllParcels/ManageAl
 import MyDeliveries from "../Pages/DashBoard/Riders/MyDeliveries/MyDeliveries";
 import RiderRoute from "../Routes/RiderRoute";
 import MyReviews from "../Pages/DashBoard/Riders/MyReviews/MyReviews";
+import UserRoute from "../Routes/UserRoute";
+import DashboardIndex from "../Routes/DashboardIndex";
 
 
 export const router = createBrowserRouter([
@@ -70,27 +72,27 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Navigate to="myparcels" replace /> 
+        element:  <DashboardIndex></DashboardIndex>
       },
       {
         path: 'myparcels',
-        element: <MyParcels />
+        element: <UserRoute><MyParcels /></UserRoute> 
       },
       {
         path:'parcel-details/:id',
-        Component: ParcelDetails
+        element: <UserRoute><ParcelDetails></ParcelDetails></UserRoute>
       },
       {
         path: 'payment/:parcelid',
-        Component: Payment
+        element: <UserRoute><Payment></Payment></UserRoute>
       },
       {
         path: 'payment-history',
-        Component: PaymentHistory
+        element: <UserRoute><PaymentHistory></PaymentHistory></UserRoute> 
       },
       {
         path: 'track-parcel',
-        Component:TrackPackage
+       element: <UserRoute><TrackPackage></TrackPackage></UserRoute>
       },
       {
         path: 'make-admin',

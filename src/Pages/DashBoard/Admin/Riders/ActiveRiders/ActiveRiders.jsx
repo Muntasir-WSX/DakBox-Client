@@ -4,6 +4,7 @@ import { Eye, ShieldAlert, X, UserCheck, Trash2, MessageSquareText, ChevronLeft,
 import Swal from 'sweetalert2';
 import useAxiosSecure from '../../../../../Hooks/useAxiosSecure';
 import AdminActionRidersReview from '../../ManageAllParcels/AdminActionRidersRivew';
+import Loading from '../../../../SharedCopmponents/Loading/Loading';
 
 const ActiveRiders = () => {
     const axiosSecure = useAxiosSecure();
@@ -85,7 +86,7 @@ const ActiveRiders = () => {
         });
     };
 
-    if (isLoading) return <div className="flex justify-center p-20"><span className="loading loading-dots loading-lg text-[#D4E96D]"></span></div>;
+    if (isLoading) return <Loading></Loading>
 
     return (
         <div className="bg-white p-6 rounded-3xl shadow-sm min-h-screen flex flex-col">
