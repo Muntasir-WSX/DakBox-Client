@@ -10,7 +10,6 @@ import {
     updateProfile 
 } from 'firebase/auth';
 import { auth } from '../../Firebase/Firebase.init';
-import axios from 'axios';
 
 const googleProvider = new GoogleAuthProvider();
 
@@ -30,7 +29,7 @@ const AuthProvider = ({ children }) => {
 
     const logOut = () => {
         setLoading(true);
-        localStorage.removeItem('access-token');
+        localStorage.removeItem('access-token'); 
         return signOut(auth);
     }
 
@@ -38,6 +37,7 @@ const AuthProvider = ({ children }) => {
         setLoading(true);
         return signInWithPopup(auth, googleProvider);
     }
+
     const updateUserProfile = (name, photo) => {
         return updateProfile(auth.currentUser, {
             displayName: name, 
@@ -45,28 +45,12 @@ const AuthProvider = ({ children }) => {
         });
     }
 
-    const [userRole, setUserRole] = useState(null);
-const [roleLoading, setRoleLoading] = useState(true);
-
-useEffect(() => {
-    if (user?.email) {
-        setRoleLoading(true);
-        axios.get(`${import.meta.env.VITE_API_URL}/user-role?email=${user.email}`, {
-            headers: { authorization: `Bearer ${localStorage.getItem('access-token')}` }
-        })
-        .then(res => {
-            setUserRole(res.data.role);
-            setRoleLoading(false);
-        })
-    } else {
-        setRoleLoading(false);
-    }
-}, [user]);
-
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, currentUser => {
             setUser(currentUser);
-            console.log('Current User State:', currentUser);
+            if (!currentUser) {
+                localStorage.removeItem('access-token');
+            }
             setLoading(false);
         });
 
@@ -77,8 +61,6 @@ useEffect(() => {
 
     const authInfo = {
         user,
-        userRole,
-        roleLoading,
         loading,
         createuser,
         signIn,

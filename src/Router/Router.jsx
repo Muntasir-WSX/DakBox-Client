@@ -26,7 +26,7 @@ import MyDeliveries from "../Pages/DashBoard/Riders/MyDeliveries/MyDeliveries";
 import RiderRoute from "../Routes/RiderRoute";
 import MyReviews from "../Pages/DashBoard/Riders/MyReviews/MyReviews";
 import UserRoute from "../Routes/UserRoute";
-import DashboardIndex from "../Routes/DashboardIndex";
+
 
 
 export const router = createBrowserRouter([
@@ -72,7 +72,12 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element:  <DashboardIndex></DashboardIndex>
+        element: (
+        <div className="flex flex-col items-center justify-center h-[70vh] text-center">
+          <h2 className="text-4xl font-bold text-[#0D2A38]">Welcome to DakBox Dashboard</h2>
+          <p className="text-gray-500 mt-2">Please select an option from the sidebar to get started.</p>
+        </div>
+      )
       },
       {
         path: 'myparcels',

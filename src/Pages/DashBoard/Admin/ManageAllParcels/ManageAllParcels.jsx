@@ -16,26 +16,33 @@ const ManageAllParcels = () => {
 
   const totalPages = Math.ceil(totalParcels / itemsPerPage);
   const pageNumbers = [...Array(totalPages).keys()].map((n) => n + 1);
+
+  // Fetch Parcels
   useEffect(() => {
     const fetchParcels = async () => {
       try {
         const res = await axiosSecure.get(`/admin/all-parcels?page=${currentPage}&limit=${itemsPerPage}`);
-        setParcels(res.data.result);
-        setTotalParcels(res.data.totalCount);
+        // সার্ভার থেকে { result, totalCount } আসে, তাই res.data.result সেট করতে হবে
+        setParcels(res.data?.result || []); 
+        setTotalParcels(res.data?.totalCount || 0);
       } catch (error) {
         console.error("Error fetching parcels:", error);
       }
     };
     fetchParcels();
   }, [currentPage, axiosSecure]);
+
   useEffect(() => {
     const fetchRiders = async () => {
       try {
         const res = await axiosSecure.get("/rider-applications");
-        const approvedRiders = res.data?.filter(rider => rider.status === 'active') || [];
+        const ridersData = Array.isArray(res.data?.result) ? res.data.result : [];
+        const approvedRiders = ridersData.filter(rider => rider.status === 'active');
+        
         setActiveRiders(approvedRiders);
       } catch (error) {
         console.error("Error fetching riders:", error);
+        setActiveRiders([]); 
       }
     };
     fetchRiders();
@@ -68,7 +75,6 @@ const ManageAllParcels = () => {
           timer: 1500,
         });
 
-        // Real-time UI Update
         setParcels((prev) =>
           prev.map((p) =>
             p._id === selectedParcel._id ? { ...p, status: "assigned" } : p,
@@ -87,6 +93,7 @@ const ManageAllParcels = () => {
         Manage All <span className="text-[#A3B730]">Parcels</span>
       </h2>
 
+      {/* Table Section */}
       <div className="overflow-x-auto grow">
         <table className="table w-full">
           <thead className="bg-gray-100">
@@ -100,75 +107,83 @@ const ManageAllParcels = () => {
             </tr>
           </thead>
           <tbody className="text-sm font-medium">
-            {parcels.map((parcel) => (
-              <tr key={parcel._id} className="hover:bg-gray-50 transition-colors">
-                <td className="font-mono text-blue-600">{parcel.tracingId}</td>
-                <td>{parcel.senderName}</td>
-                <td>{parcel.receiverDistrict}</td>
-                <td>{new Date(parcel.bookingDate).toLocaleDateString()}</td>
-                <td>
-                  <span
-                    className={`badge border-none py-3 px-4 ${
-                      parcel.status === "paid"
-                        ? "bg-green-100 text-green-600"
-                        : parcel.status === "pending"
-                        ? "bg-orange-100 text-orange-600"
-                        : "bg-blue-100 text-blue-600"
-                    }`}
-                  >
-                    {parcel.status}
-                  </span>
-                </td>
-                <td className="text-center">
-                  <button
-                    disabled={parcel.status !== "paid"}
-                    onClick={() => {
-                      setSelectedParcel(parcel);
-                      document.getElementById("assign_modal").showModal();
-                    }}
-                    className={`btn btn-sm rounded-lg border-none ${
-                      parcel.status === "paid"
-                        ? "bg-[#D4E96D] text-[#0D2A38] hover:bg-[#0D2A38] hover:text-[#D4E96D]"
-                        : "bg-gray-100 text-gray-400 cursor-not-allowed"
-                    }`}
-                  >
-                    Assign Rider
-                  </button>
-                </td>
+            {parcels.length > 0 ? (
+              parcels.map((parcel) => (
+                <tr key={parcel._id} className="hover:bg-gray-50 transition-colors">
+                  <td className="font-mono text-blue-600">{parcel.tracingId}</td>
+                  <td>{parcel.senderName}</td>
+                  <td>{parcel.receiverDistrict}</td>
+                  <td>{parcel.bookingDate ? new Date(parcel.bookingDate).toLocaleDateString() : 'N/A'}</td>
+                  <td>
+                    <span
+                      className={`badge border-none py-3 px-4 capitalize ${
+                        parcel.status === "paid"
+                          ? "bg-green-100 text-green-600"
+                          : parcel.status === "pending"
+                          ? "bg-orange-100 text-orange-600"
+                          : "bg-blue-100 text-blue-600"
+                      }`}
+                    >
+                      {parcel.status}
+                    </span>
+                  </td>
+                  <td className="text-center">
+                    <button
+                      disabled={parcel.status !== "paid"}
+                      onClick={() => {
+                        setSelectedParcel(parcel);
+                        document.getElementById("assign_modal").showModal();
+                      }}
+                      className={`btn btn-sm rounded-lg border-none ${
+                        parcel.status === "paid"
+                          ? "bg-[#D4E96D] text-[#0D2A38] hover:bg-[#0D2A38] hover:text-[#D4E96D]"
+                          : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                      }`}
+                    >
+                      Assign Rider
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="6" className="text-center py-10 text-gray-400">No parcels found.</td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>
 
       {/* Pagination Controls */}
-      <div className="flex justify-center items-center gap-2 mt-10">
-        <button
-          disabled={currentPage === 1}
-          onClick={() => setCurrentPage(currentPage - 1)}
-          className="btn btn-sm btn-outline border-gray-300 hover:bg-[#0D2A38]"
-        >
-          Prev
-        </button>
-
-        {pageNumbers.map((number) => (
+      {totalPages > 1 && (
+        <div className="flex justify-center items-center gap-2 mt-10">
           <button
-            key={number}
-            onClick={() => setCurrentPage(number)}
-            className={`btn btn-sm px-4 ${currentPage === number ? "bg-[#0D2A38] text-white border-[#0D2A38]" : "btn-ghost border border-gray-200"}`}
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage(currentPage - 1)}
+            className="btn btn-sm btn-outline border-gray-300 hover:bg-[#0D2A38]"
           >
-            {number}
+            Prev
           </button>
-        ))}
 
-        <button
-          disabled={currentPage === totalPages}
-          onClick={() => setCurrentPage(currentPage + 1)}
-          className="btn btn-sm btn-outline border-gray-300 hover:bg-[#0D2A38]"
-        >
-          Next
-        </button>
-      </div>
+          {pageNumbers.map((number) => (
+            <button
+              key={number}
+              onClick={() => setCurrentPage(number)}
+              className={`btn btn-sm px-4 ${currentPage === number ? "bg-[#0D2A38] text-white border-[#0D2A38]" : "btn-ghost border border-gray-200"}`}
+            >
+              {number}
+            </button>
+          ))}
+
+          <button
+            disabled={currentPage === totalPages}
+            onClick={() => setCurrentPage(currentPage + 1)}
+            className="btn btn-sm btn-outline border-gray-300 hover:bg-[#0D2A38]"
+          >
+            Next
+          </button>
+        </div>
+      )}
 
       {/* Assignment Modal */}
       <dialog id="assign_modal" className="modal modal-bottom sm:modal-middle">
@@ -183,11 +198,15 @@ const ManageAllParcels = () => {
               <label className="label text-sm font-bold text-gray-700">Available Riders</label>
               <select name="riderEmail" className="select select-bordered w-full focus:outline-[#D4E96D]" defaultValue="" required>
                 <option disabled value="">Select a rider from the list</option>
-                {activeRiders.map((rider) => (
-                  <option key={rider._id} value={rider.email}>
-                    {rider.name} ({rider.district})
-                  </option>
-                ))}
+                {activeRiders.length > 0 ? (
+                  activeRiders.map((rider) => (
+                    <option key={rider._id} value={rider.email}>
+                      {rider.name} ({rider.district})
+                    </option>
+                  ))
+                ) : (
+                  <option disabled>No active riders available</option>
+                )}
               </select>
             </div>
 

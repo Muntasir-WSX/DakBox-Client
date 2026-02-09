@@ -12,20 +12,26 @@ const SignIn = () => {
   const { signIn, signInWithGoogle } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-
   const from = location.state?.from?.pathname || "/";
 
-  // Helper function to handle JWT token storage
   const handleJWTAndNavigate = async (email) => {
     try {
+      
       const { data } = await axios.post(`${import.meta.env.VITE_API_URL}/jwt`, { email });
       if (data.token) {
-        localStorage.setItem('access-token', data.token);
-        navigate(from, { replace: true });
+       localStorage.setItem('access-token', data.token);
+        const roleRes = await axios.get(`${import.meta.env.VITE_API_URL}/user-role?email=${email}`, {
+          headers: { authorization: `Bearer ${data.token}` }
+        });
+        
+        const role = roleRes.data?.role;
+        if (role === 'admin') navigate('/dashboard/manage-admin');
+        else if (role === 'rider') navigate('/dashboard/assigned-parcels');
+        else navigate('/dashboard/myparcels');
       }
     } catch (err) {
-      console.error("JWT Error:", err);
-      toast.error("Failed to secure session!");
+      console.error("JWT/Role Error:", err);
+      toast.error("Failed to secure session or fetch role!");
     }
   };
 

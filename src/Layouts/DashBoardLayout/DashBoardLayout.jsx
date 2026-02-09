@@ -21,13 +21,11 @@ const DashBoardLayout = () => {
   const [role, isRoleLoading] = useRole();
 
   if (isRoleLoading) return <Loading></Loading>;
-
-  // একটি কমন ফাংশন যা একটিভ থাকলে গ্রিন কালার এবং না থাকলে হোয়াইট টেক্সট দেখাবে
   const activeLinkStyle = ({ isActive }) =>
     `flex items-center gap-3 text-lg font-semibold rounded-xl py-3 px-5 transition-all active:scale-95 ${
       isActive
-        ? "bg-[#D4E96D] text-[#0D2A38]" // একটিভ থাকলে গ্রিন ব্যাকগ্রাউন্ড
-        : "text-white hover:bg-white/10" // নরমাল অবস্থায় হোয়াইট টেক্সট
+        ? "bg-[#D4E96D] text-[#0D2A38]" 
+        : "text-white hover:bg-white/10" 
     }`;
 
   return (
@@ -80,7 +78,6 @@ const DashBoardLayout = () => {
           {role === "user" && (
             <>
               <li><NavLink to="/dashboard/myparcels" className={activeLinkStyle}><Package size={22} /> My Parcels</NavLink></li>
-              <li><NavLink to="/send-parcel" className={activeLinkStyle}><PlusCircle size={22} /> Send Parcel</NavLink></li>
               <li><NavLink to="/dashboard/payment-history" className={activeLinkStyle}><History size={22} /> Payment History</NavLink></li>
               <li><NavLink to="/dashboard/track-parcel" className={activeLinkStyle}><TruckIcon size={22} /> Track Parcel</NavLink></li>
             </>
@@ -101,7 +98,7 @@ const DashBoardLayout = () => {
             <>
               <li><NavLink to="/dashboard/assigned-parcels" className={activeLinkStyle}><ClipboardList size={22} /> My Deliveries</NavLink></li>
               <li><NavLink to="/dashboard/rider-reviews" className={activeLinkStyle}><UserCog size={22} /> My Reviews</NavLink></li>
-              
+
             </>
           )}
 
