@@ -26,6 +26,7 @@ import MyDeliveries from "../Pages/DashBoard/Riders/MyDeliveries/MyDeliveries";
 import RiderRoute from "../Routes/RiderRoute";
 import MyReviews from "../Pages/DashBoard/Riders/MyReviews/MyReviews";
 import UserRoute from "../Routes/UserRoute";
+import MyEarnings from "../Pages/DashBoard/Admin/Riders/MyEarnings/MyEarnings";
 
 
 
@@ -125,6 +126,14 @@ export const router = createBrowserRouter([
       path: 'rider-reviews',
       element: <RiderRoute><MyReviews></MyReviews></RiderRoute>
     },
+    {
+      path: "my-earnings",
+      element: <RiderRoute><MyEarnings></MyEarnings></RiderRoute>
+    },
+    // {
+    //   path: "cashout",
+    //   element:<RiderRoute></RiderRoute>
+    // }
     ]
   },
 

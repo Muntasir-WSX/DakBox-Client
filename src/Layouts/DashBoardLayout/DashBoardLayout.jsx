@@ -98,7 +98,8 @@ const DashBoardLayout = () => {
             <>
               <li><NavLink to="/dashboard/assigned-parcels" className={activeLinkStyle}><ClipboardList size={22} /> My Deliveries</NavLink></li>
               <li><NavLink to="/dashboard/rider-reviews" className={activeLinkStyle}><UserCog size={22} /> My Reviews</NavLink></li>
-
+              <li><NavLink to="/dashboard/my-earnings" className={activeLinkStyle}><History size={22} /> My Earnings</NavLink></li>
+              <li><NavLink to="/dashboard/cashout" className={activeLinkStyle}><PlusCircle size={22} /> Cashout</NavLink></li>
             </>
           )}
 

@@ -32,21 +32,20 @@ const ManageAllParcels = () => {
     fetchParcels();
   }, [currentPage, axiosSecure]);
 
-  useEffect(() => {
-    const fetchRiders = async () => {
-      try {
-        const res = await axiosSecure.get("/rider-applications");
-        const ridersData = Array.isArray(res.data?.result) ? res.data.result : [];
-        const approvedRiders = ridersData.filter(rider => rider.status === 'active');
-        
-        setActiveRiders(approvedRiders);
-      } catch (error) {
-        console.error("Error fetching riders:", error);
-        setActiveRiders([]); 
-      }
-    };
-    fetchRiders();
-  }, [axiosSecure]);
+ useEffect(() => {
+  const fetchRiders = async () => {
+    try {
+      const res = await axiosSecure.get("/users/riders-list");
+      const ridersData = Array.isArray(res.data) ? res.data : [];
+      setActiveRiders(ridersData);
+      
+    } catch (error) {
+      console.error("Error fetching riders:", error);
+      setActiveRiders([]); 
+    }
+  };
+  fetchRiders();
+}, [axiosSecure]);
 
   const handleAssign = async (e) => {
     e.preventDefault();
@@ -196,18 +195,24 @@ const ManageAllParcels = () => {
           <form onSubmit={handleAssign} className="mt-6 space-y-5">
             <div className="form-control w-full">
               <label className="label text-sm font-bold text-gray-700">Available Riders</label>
-              <select name="riderEmail" className="select select-bordered w-full focus:outline-[#D4E96D]" defaultValue="" required>
-                <option disabled value="">Select a rider from the list</option>
-                {activeRiders.length > 0 ? (
-                  activeRiders.map((rider) => (
-                    <option key={rider._id} value={rider.email}>
-                      {rider.name} ({rider.district})
-                    </option>
-                  ))
-                ) : (
-                  <option disabled>No active riders available</option>
-                )}
-              </select>
+              <select 
+  name="riderEmail" 
+  className="select select-bordered w-full focus:outline-[#D4E96D]" 
+  defaultValue="" 
+  required
+>
+  <option disabled value="">Select a rider from the list</option>
+  {activeRiders.length > 0 ? (
+    activeRiders.map((rider) => (
+      <option key={rider._id} value={rider.email}>
+        
+        {rider.name} {rider.district ? `(${rider.district})` : ""}
+      </option>
+    ))
+  ) : (
+    <option disabled>No active riders available</option>
+  )}
+</select>
             </div>
 
             <div className="form-control w-full">
