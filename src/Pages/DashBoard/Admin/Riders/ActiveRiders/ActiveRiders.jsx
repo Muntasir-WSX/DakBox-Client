@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Eye, ShieldAlert, BadgeCheck, X, UserCheck, Trash2, MessageSquareText } from 'lucide-react'; 
+import { Eye, ShieldAlert, X, UserCheck, Trash2, MessageSquareText, ChevronLeft, ChevronRight } from 'lucide-react'; 
 import Swal from 'sweetalert2';
 import useAxiosSecure from '../../../../../Hooks/useAxiosSecure';
 import AdminActionRidersReview from '../../ManageAllParcels/AdminActionRidersRivew';
@@ -10,17 +10,25 @@ const ActiveRiders = () => {
     const queryClient = useQueryClient();
     const [selectedRider, setSelectedRider] = useState(null);
     const [openReviewModal, setOpenReviewModal] = useState(null);
+    
+    // --- Pagination States ---
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
 
-    // Fetch Active & Blocked Riders (Exclude Pending)
-    const { data: riders = [], isLoading } = useQuery({
-        queryKey: ['all-riders-manage'],
+    // Fetch Riders with Pagination logic from backend
+    const { data: riderData = { result: [], totalCount: 0 }, isLoading } = useQuery({
+        queryKey: ['all-riders-manage', currentPage], // currentPage add kora hoyeche jate page change hole refetch hoy
         queryFn: async () => {
-            const res = await axiosSecure.get('/rider-applications');
-            return res.data?.filter(rider => rider.status !== 'pending') || [];
+            const res = await axiosSecure.get(`/rider-applications?page=${currentPage}&limit=${itemsPerPage}`);
+            return res.data;
         }
     });
 
-    // Toggle Status Mutation (Active <-> Penalty)
+    const riders = riderData.result || [];
+    const totalCount = riderData.totalCount || 0;
+    const totalPages = Math.ceil(totalCount / itemsPerPage);
+
+    // Toggle Status Mutation
     const toggleMutation = useMutation({
         mutationFn: async (rider) => {
             const res = await axiosSecure.patch(`/rider-applications/toggle-status/${rider._id}`, {
@@ -34,6 +42,8 @@ const ActiveRiders = () => {
             Swal.fire("Success!", data.message || "Status updated successfully", "success");
         }
     });
+
+    // Delete Rider Mutation
     const deleteRiderMutation = useMutation({
         mutationFn: async (id) => {
             const res = await axiosSecure.delete(`/rider-applications/${id}`);
@@ -41,10 +51,7 @@ const ActiveRiders = () => {
         },
         onSuccess: () => {
             queryClient.invalidateQueries(['all-riders-manage']);
-            Swal.fire("Removed!", "Rider has been removed and role reset to user.", "success");
-        },
-        onError: () => {
-            Swal.fire("Error", "Failed to remove rider", "error");
+            Swal.fire("Removed!", "Rider has been removed.", "success");
         }
     });
 
@@ -52,7 +59,7 @@ const ActiveRiders = () => {
         const isActive = rider.status === 'active';
         Swal.fire({
             title: isActive ? "Apply Penalty?" : "Restore Access?",
-            text: isActive ? "Rider will be restricted from the platform." : "Rider will be active again.",
+            text: isActive ? "Rider will be restricted." : "Rider will be active again.",
             icon: "warning",
             showCancelButton: true,
             confirmButtonColor: isActive ? "#ef4444" : "#D4E96D",
@@ -64,16 +71,13 @@ const ActiveRiders = () => {
         });
     };
 
-   // Handle Delete ---
     const handleDeleteRider = (id) => {
         Swal.fire({
-            title: "Remove Rider Permanently?",
-            text: "This will delete their application and change their role back to 'user'.",
+            title: "Remove Rider?",
+            text: "This will delete their application and reset role to 'user'.",
             icon: "error",
             showCancelButton: true,
-            confirmButtonColor: "#d33",
-            cancelButtonColor: "#3085d6",
-            confirmButtonText: "Yes, Remove Him!"
+            confirmButtonText: "Yes, Remove!"
         }).then((result) => {
             if (result.isConfirmed) {
                 deleteRiderMutation.mutate(id);
@@ -84,15 +88,15 @@ const ActiveRiders = () => {
     if (isLoading) return <div className="flex justify-center p-20"><span className="loading loading-dots loading-lg text-[#D4E96D]"></span></div>;
 
     return (
-        <div className="bg-white p-6 rounded-3xl shadow-sm min-h-screen">
+        <div className="bg-white p-6 rounded-3xl shadow-sm min-h-screen flex flex-col">
             <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-bold text-[#0D2A38]">Manage Riders</h2>
                 <div className="badge bg-[#D4E96D] text-[#0D2A38] p-4 font-bold border-none">
-                    Verified Riders: {riders.length}
+                    Verified Riders: {totalCount}
                 </div>
             </div>
 
-            <div className="overflow-x-auto w-full">
+            <div className="overflow-x-auto w-full grow">
                 <table className="table w-full">
                     <thead>
                         <tr className="bg-gray-100 text-[#0D2A38]">
@@ -143,20 +147,9 @@ const ActiveRiders = () => {
                                     </td>
                                     <td className="text-center">
                                         <div className="flex justify-center gap-2">
-                                            <button onClick={() => setSelectedRider(rider)} className="btn btn-square btn-sm bg-gray-100 text-gray-600 border-none hover:bg-gray-200">
-                                                <Eye size={18} />
-                                            </button>
-                                            <button onClick={() => setOpenReviewModal(rider)} className="btn btn-square btn-sm bg-[#D4E96D]/20 text-[#0D2A38] border-none hover:bg-[#D4E96D]" title="View Performance">
-                                             <MessageSquareText size={18} />
-                                            </button>
-                                            
-                                            <button 
-                                                onClick={() => handleDeleteRider(rider._id)} 
-                                                className="btn btn-square btn-sm bg-red-100 text-red-600 border-none hover:bg-red-200"
-                                                title="Remove Rider"
-                                            >
-                                                <Trash2 size={18} />
-                                            </button>
+                                            <button onClick={() => setSelectedRider(rider)} className="btn btn-square btn-sm bg-gray-100 text-gray-600 border-none hover:bg-gray-200"><Eye size={18} /></button>
+                                            <button onClick={() => setOpenReviewModal(rider)} className="btn btn-square btn-sm bg-[#D4E96D]/20 text-[#0D2A38] border-none hover:bg-[#D4E96D]"><MessageSquareText size={18} /></button>
+                                            <button onClick={() => handleDeleteRider(rider._id)} className="btn btn-square btn-sm bg-red-100 text-red-600 border-none hover:bg-red-200"><Trash2 size={18} /></button>
                                         </div>
                                     </td>
                                 </tr>
@@ -166,7 +159,40 @@ const ActiveRiders = () => {
                 </table>
             </div>
 
-            {/* Modal */}
+            {/* --- Pagination Controls --- */}
+            {totalPages > 1 && (
+                <div className="flex justify-center items-center gap-2 mt-10 mb-4">
+                    <button 
+                        onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                        disabled={currentPage === 1}
+                        className="btn btn-sm btn-circle bg-white border-gray-200 disabled:opacity-30"
+                    >
+                        <ChevronLeft size={20} />
+                    </button>
+
+                    {[...Array(totalPages).keys()].map((num) => (
+                        <button
+                            key={num + 1}
+                            onClick={() => setCurrentPage(num + 1)}
+                            className={`btn btn-sm btn-circle border-none ${
+                                currentPage === num + 1 ? 'bg-[#0D2A38] text-white' : 'bg-gray-100 text-gray-700 hover:bg-[#D4E96D]'
+                            }`}
+                        >
+                            {num + 1}
+                        </button>
+                    ))}
+
+                    <button 
+                        onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                        disabled={currentPage === totalPages}
+                        className="btn btn-sm btn-circle bg-white border-gray-200 disabled:opacity-30"
+                    >
+                        <ChevronRight size={20} />
+                    </button>
+                </div>
+            )}
+
+            {/* Modals */}
             {selectedRider && (
                 <div className="modal modal-open">
                     <div className="modal-box max-w-2xl bg-white rounded-3xl border-t-8 border-[#0D2A38]">
@@ -178,7 +204,7 @@ const ActiveRiders = () => {
                             <div><p className="text-xs text-gray-400 uppercase font-bold">NID</p><p className="text-lg font-semibold">{selectedRider.nid}</p></div>
                             <div><p className="text-xs text-gray-400 uppercase font-bold">License</p><p className="text-lg font-semibold">{selectedRider.license}</p></div>
                             <div><p className="text-xs text-gray-400 uppercase font-bold">Bike Model</p><p className="text-lg font-semibold">{selectedRider.bikeModel}</p></div>
-                            <div><p className="text-xs text-gray-400 uppercase font-bold">Current Status</p><p className="text-lg font-bold text-blue-600 uppercase">{selectedRider.status}</p></div>
+                            <div><p className="text-xs text-gray-400 uppercase font-bold">Status</p><p className="text-lg font-bold text-blue-600 uppercase">{selectedRider.status}</p></div>
                         </div>
                         <div className="modal-action">
                             <button onClick={() => setSelectedRider(null)} className="btn bg-[#0D2A38] text-white px-8 rounded-xl">Close</button>
@@ -186,6 +212,7 @@ const ActiveRiders = () => {
                     </div>
                 </div>
             )}
+
             {openReviewModal && (
                 <AdminActionRidersReview 
                     riderEmail={openReviewModal.email}
