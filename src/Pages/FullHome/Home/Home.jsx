@@ -18,7 +18,7 @@ const Home = () => {
       duration: 1000, 
       offset: 100,    
       easing: "ease-in-out",
-      once: true,    // Scroll up-down korle bar bar animation hobe na, shudhu ekbar hobe
+      once: true,  
     });
   }, []);
 

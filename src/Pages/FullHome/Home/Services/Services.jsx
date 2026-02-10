@@ -22,7 +22,7 @@ const Services = () => {
       title: "Nationwide Delivery",
       desc: "We deliver parcels nationwide with home delivery in every district, ensuring your products reach customers within 48-72 hours.",
       icon: <Globe className="w-6 h-6 text-blue-600" />,
-      highlight: true // Lime green card
+      highlight: true
     },
     {
       id: 3,

@@ -30,8 +30,10 @@ const MyEarnings = () => {
             <Helmet><title>DakBox | My Earnings</title></Helmet>
             
             <header className="mb-8">
-                <h1 className="text-3xl font-bold text-[#0D2A38]">My <span className="text-[#A3B730]">Earnings</span></h1>
-                <p className="text-gray-500">Track your daily income and delivery commissions</p>
+                <h2 className="text-3xl font-black text-[#0D2A38] uppercase tracking-tight">
+                My <span className="text-[#D9F26B] bg-[#0D2A38] px-2 rounded">Earnings</span>
+                </h2>
+                <p className="text-gray-500 mt-5">Track your daily income and delivery commissions</p>
             </header>
 
             {/* Summary Cards */}

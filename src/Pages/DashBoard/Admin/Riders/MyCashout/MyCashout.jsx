@@ -62,11 +62,11 @@ const MyCashout = () => {
 
     return (
         <div className="p-6 bg-gray-50 min-h-screen">
-            <h1 className="text-3xl font-black text-[#0D2A38] mb-8 uppercase tracking-tighter">
-                My <span className="text-[#A3B730]">Wallet</span>
-            </h1>
+            <h2 className="text-3xl font-black text-[#0D2A38] uppercase tracking-tight">
+                            My <span className="text-[#D9F26B] bg-[#0D2A38] px-2 rounded">Wallet</span>
+            </h2>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="grid mt-5 grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Withdrawal Form */}
                 <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 h-fit">
                     <h3 className="font-bold text-lg mb-4 flex items-center gap-2">

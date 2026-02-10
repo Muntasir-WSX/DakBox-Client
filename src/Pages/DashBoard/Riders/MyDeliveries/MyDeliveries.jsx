@@ -38,9 +38,11 @@ const MyDeliveries = () => {
 
   return (
     <div className="p-6">
-      <h2 className="text-2xl font-bold mb-6 text-[#0D2A38]">My <span className="text-[#A3B730]">Deliveries</span></h2>
+      <h2 className="text-3xl font-black text-[#0D2A38] uppercase tracking-tight">
+                            My  <span className="text-[#D9F26B] bg-[#0D2A38] px-2 rounded"> Deliveries</span>
+      </h2>
       
-      <div className="overflow-x-auto shadow-lg rounded-xl">
+      <div className="overflow-x-auto mt-5 shadow-lg rounded-xl">
         <table className="table w-full bg-white">
           <thead className="bg-gray-100 text-[#0D2A38]">
             <tr>

@@ -14,7 +14,6 @@ const Navbar = () => {
     logOut()
     .then(() => {
       toast.success("Logged out successfully", {
-        icon: '👋',
         style: { background: "#1F2937", color: "#D9F26B" },
       });
     })
@@ -60,23 +59,17 @@ const Navbar = () => {
         
         <div className="drawer-content flex flex-col">
           <div className="navbar bg-white border border-gray-100 rounded-full px-4 xl:px-8 py-2 shadow-sm flex items-center justify-between min-h-16">
-            
-            {/* Start: Logo Section */}
             <div className="shrink-0 flex items-center gap-2">
               <label htmlFor="my-drawer" className="btn btn-ghost lg:hidden p-0 min-h-0 h-auto">
                 <Menu size={24} className="text-gray-600" />
               </label>
               <DakBox />
             </div>
-
-            {/* Center: Menu Section  */}
             <div className="hidden lg:flex grow justify-center px-4 overflow-hidden">
               <ul className="menu menu-horizontal gap-1 xl:gap-4 flex-nowrap">
                 {navItems}
               </ul>
             </div>
-
-            {/* End: Auth Section */}
             <div className="shrink-0 flex items-center gap-2">
               {user ? (
                 <div className="flex items-center gap-2 xl:gap-3">
@@ -115,8 +108,6 @@ const Navbar = () => {
 
           </div>
         </div>
-
-        {/* Sidebar for Mobile */}
         <div className="drawer-side">
           <label htmlFor="my-drawer" className="drawer-overlay"></label>
           <ul className="menu p-6 w-80 min-h-full bg-white text-base-content space-y-4 pt-10">

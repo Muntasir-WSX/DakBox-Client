@@ -91,7 +91,9 @@ const ActiveRiders = () => {
     return (
         <div className="bg-white p-6 rounded-3xl shadow-sm min-h-screen flex flex-col">
             <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-[#0D2A38]">Manage Riders</h2>
+                <h2 className="text-3xl font-black text-[#0D2A38] uppercase tracking-tight">
+                            manage <span className="text-[#D9F26B] bg-[#0D2A38] px-2 rounded">Riders</span>
+                </h2>
                 <div className="badge bg-[#D4E96D] text-[#0D2A38] p-4 font-bold border-none">
                     Verified Riders: {totalCount}
                 </div>

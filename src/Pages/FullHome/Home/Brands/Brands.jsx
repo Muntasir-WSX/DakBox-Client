@@ -1,7 +1,5 @@
 import React from "react";
 import { motion } from "framer-motion";
-
-// Images
 import amazon from "../../../../assets/brands/amazon.png";
 import casio from "../../../../assets/brands/casio.png";
 import moonstar from "../../../../assets/brands/moonstar.png";

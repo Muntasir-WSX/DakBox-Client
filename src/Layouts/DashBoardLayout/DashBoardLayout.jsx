@@ -9,6 +9,7 @@ import {
   Home,
   Package,
   PlusCircle,
+  TrendingUp,
   TruckIcon,
   UserCog,
   UserRoundCog,
@@ -87,6 +88,7 @@ const DashBoardLayout = () => {
           {/* Admin Routes */}
           {role === "admin" && (
             <>
+              <li><NavLink to="/dashboard/insights-analytics" className={activeLinkStyle}><TrendingUp size={22} /> Insights & Analytics</NavLink></li>
               <li><NavLink to="/dashboard/manage-admin" className={activeLinkStyle}><ClipboardList size={22} /> Manage All Parcels</NavLink></li>
               <li><NavLink to="/dashboard/active-riders" className={activeLinkStyle}><Bike size={22} /> Active Riders</NavLink></li>
               <li><NavLink to="/dashboard/pending-riders" className={activeLinkStyle}><FaUserClock size={22} /> Pending Riders</NavLink></li>

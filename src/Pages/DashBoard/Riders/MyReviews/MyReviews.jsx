@@ -28,7 +28,7 @@ const MyReviews = () => {
                 {/* Header Section with Stats */}
                 <div className="bg-[#0D2A38] rounded-4xl p-8 mb-10 text-white flex flex-col md:flex-row justify-between items-center gap-6">
                     <div>
-                        <h2 className="text-3xl font-black uppercase tracking-tight">My <span className="text-[#D9F26B]">Reviews</span></h2>
+                        <h2 className="text-3xl font-extrabold uppercase tracking-tight">My <span className="text-[#D9F26B]">Reviews</span></h2>
                         <p className="text-gray-400 mt-1">See what customers are saying about your service</p>
                     </div>
                     

@@ -5,11 +5,9 @@ import Loading from "../Pages/SharedCopmponents/Loading/Loading";
 const RiderRoute = ({ children }) => {
     const [role, isRoleLoading] = useRole();
     const location = useLocation();
-
-    if (isRoleLoading) {
+   if (isRoleLoading) {
         return <Loading />;
     }
-
     if (role === 'rider') {
         return children;
     }

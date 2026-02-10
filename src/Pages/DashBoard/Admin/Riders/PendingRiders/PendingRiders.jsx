@@ -59,7 +59,6 @@ const PendingRiders = () => {
             confirmButtonText: "Yes, Approve!"
         }).then((result) => {
             if (result.isConfirmed) {
-                // এখানে সঠিক ভাবে id এবং email পাঠানো হচ্ছে
                 approveMutation.mutate({ id: rider._id, email: rider.email });
             }
         });
@@ -83,9 +82,11 @@ const PendingRiders = () => {
 
     return (
         <div className="bg-white p-6 rounded-3xl shadow-sm min-h-100">
-            <h2 className="text-2xl font-bold mb-6 text-[#0D2A38]">Pending Rider Applications</h2>
+            <h2 className="text-3xl font-black text-[#0D2A38] uppercase tracking-tight">
+                            Pending  <span className="text-[#D9F26B] bg-[#0D2A38] px-2 rounded"> Riders</span>
+                </h2>
             
-            <div className="overflow-x-auto w-full">
+            <div className="overflow-x-auto mt-5 w-full">
                 <table className="table w-full">
                     <thead>
                         <tr className="bg-gray-100 text-[#0D2A38]">

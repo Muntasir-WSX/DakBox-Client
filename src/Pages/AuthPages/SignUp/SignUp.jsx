@@ -6,17 +6,19 @@ import useAuth from "../../../Hooks/useAuth";
 import toast from "react-hot-toast";
 import { Helmet } from "react-helmet-async";
 import axios from "axios";
-import useAxiosSecure from "../../../Hooks/useAxiosSecure"; // For secure calls
+import useAxiosSecure from "../../../Hooks/useAxiosSecure";
 
 const SignUp = () => {
-  const { register, handleSubmit, formState: { errors } } = useForm();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
   const { createuser, updateUserProfile, signInWithGoogle } = useAuth();
   const navigate = useNavigate();
   const axiosSecure = useAxiosSecure();
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
-
-  // 1. Helper function to handle JWT & DB entry
   const createJWTandUser = async (user, name, photoURL) => {
     const userInfo = {
       name: name || user?.displayName,
@@ -24,17 +26,17 @@ const SignUp = () => {
       photoURL: photoURL || user?.photoURL,
       role: "user",
       created_at: new Date().toISOString(),
-      last_login: new Date().toISOString()
+      last_login: new Date().toISOString(),
     };
 
-    // First get the token and save it to localStorage
-    const { data } = await axios.post(`${import.meta.env.VITE_API_URL}/jwt`, { email: user?.email });
+    const { data } = await axios.post(`${import.meta.env.VITE_API_URL}/jwt`, {
+      email: user?.email,
+    });
     if (data.token) {
-      localStorage.setItem('access-token', data.token);
+      localStorage.setItem("access-token", data.token);
     }
 
-    // Now use axiosSecure to save user in DB (it will now automatically have the header)
-    return await axiosSecure.post('/users', userInfo);
+    return await axiosSecure.post("/users", userInfo);
   };
 
   const handleImageChange = (e) => {
@@ -47,7 +49,6 @@ const SignUp = () => {
   const onSubmit = async (data) => {
     setLoading(true);
     try {
-      // 1. Upload image to ImgBB
       let photoURL = "";
       if (data.image && data.image[0]) {
         const formData = new FormData();
@@ -59,22 +60,17 @@ const SignUp = () => {
         }
       }
 
-      // 2. Create user in Firebase
       const result = await createuser(data.email, data.password);
-      
-      // 3. Update Firebase Profile
       await updateUserProfile(data.name, photoURL);
 
-      // 4. Get JWT & Save to MongoDB (The missing piece)
       const userRes = await createJWTandUser(result.user, data.name, photoURL);
-      
+
       if (userRes.data.insertedId || userRes.data.inserted === false) {
         toast.success("Account created successfully!", {
           style: { background: "#D9F26B", color: "#000", fontWeight: "bold" },
         });
         navigate("/");
       }
-      
     } catch (error) {
       console.error("Signup Error:", error);
       toast.error(error.message || "Registration failed!");
@@ -86,10 +82,8 @@ const SignUp = () => {
   const handleGoogleSignUp = async () => {
     try {
       const result = await signInWithGoogle();
-      
-      // Get JWT & Save to MongoDB
       const res = await createJWTandUser(result.user);
-      
+
       if (res.data.insertedId || res.data.inserted === false) {
         toast.success("Signed in with Google successfully!");
         navigate("/");
@@ -106,69 +100,118 @@ const SignUp = () => {
         <title>DakBox | Sign Up</title>
       </Helmet>
       <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-2 text-gray-900">Create an Account</h1>
+        <h1 className="text-4xl font-bold mb-2 text-gray-900">
+          Create an Account
+        </h1>
         <p className="text-gray-500 text-sm">Register with DakBox</p>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        {/* Profile Image Input */}
         <div className="form-control w-full">
           <label className="label py-1">
-            <span className="label-text font-semibold text-gray-700">Profile Picture</span>
+            <span className="label-text font-semibold text-gray-700">
+              Profile Picture
+            </span>
           </label>
           <div className="flex items-center gap-4">
-            <label htmlFor="image-upload" className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center border-2 border-dashed border-gray-300 relative cursor-pointer overflow-hidden">
+            <label
+              htmlFor="image-upload"
+              className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center border-2 border-dashed border-gray-300 relative cursor-pointer overflow-hidden"
+            >
               {preview ? (
-                <img src={preview} alt="Preview" className="w-full h-full object-cover" />
+                <img
+                  src={preview}
+                  alt="Preview"
+                  className="w-full h-full object-cover"
+                />
               ) : (
                 <span className="text-gray-400 text-2xl">👤</span>
               )}
             </label>
-            <input 
-              id="image-upload" 
-              type="file" 
-              accept="image/*" 
-              {...register("image")} 
-              onChange={handleImageChange} 
-              className="hidden" 
+            <input
+              id="image-upload"
+              type="file"
+              accept="image/*"
+              {...register("image")}
+              onChange={handleImageChange}
+              className="hidden"
             />
             <div className="text-xs text-gray-400">
               <p>Click the icon to upload</p>
             </div>
           </div>
         </div>
-
-        {/* Name Input */}
         <div className="form-control w-full">
-          <label className="label py-1"><span className="label-text font-semibold text-gray-700">Name</span></label>
-          <input type="text" placeholder="Full Name" {...register("name", { required: "Name is required" })} className="input input-bordered w-full bg-white border-gray-300 focus:border-[#D4E96D] outline-none" />
+          <label className="label py-1">
+            <span className="label-text font-semibold text-gray-700">Name</span>
+          </label>
+          <input
+            type="text"
+            placeholder="Full Name"
+            {...register("name", { required: "Name is required" })}
+            className="input input-bordered w-full bg-white border-gray-300 focus:border-[#D4E96D] outline-none"
+          />
         </div>
-
         {/* Email Input */}
         <div className="form-control w-full">
-          <label className="label py-1"><span className="label-text font-semibold text-gray-700">Email</span></label>
-          <input type="email" placeholder="Email" {...register("email", { required: "Email is required" })} className="input input-bordered w-full bg-white border-gray-300 focus:border-[#D4E96D] outline-none" />
+          <label className="label py-1">
+            <span className="label-text font-semibold text-gray-700">
+              Email
+            </span>
+          </label>
+          <input
+            type="email"
+            placeholder="Email"
+            {...register("email", { required: "Email is required" })}
+            className="input input-bordered w-full bg-white border-gray-300 focus:border-[#D4E96D] outline-none"
+          />
         </div>
 
         {/* Password Input */}
         <div className="form-control w-full">
-          <label className="label py-1"><span className="label-text font-semibold text-gray-700">Password</span></label>
-          <input type="password" placeholder="Min 6 characters" {...register("password", { required: "Password is required", minLength: 6 })} className="input input-bordered w-full bg-white border-gray-300 focus:border-[#D4E96D] outline-none" />
-          {errors.password && <span className="text-red-500 text-xs">Password must be 6+ characters</span>}
+          <label className="label py-1">
+            <span className="label-text font-semibold text-gray-700">
+              Password
+            </span>
+          </label>
+          <input
+            type="password"
+            placeholder="Min 6 characters"
+            {...register("password", {
+              required: "Password is required",
+              minLength: 6,
+            })}
+            className="input input-bordered w-full bg-white border-gray-300 focus:border-[#D4E96D] outline-none"
+          />
+          {errors.password && (
+            <span className="text-red-500 text-xs">
+              Password must be 6+ characters
+            </span>
+          )}
         </div>
 
-        <button type="submit" disabled={loading} className="btn w-full bg-[#D4E96D] hover:bg-[#c2d950] border-none text-gray-800 font-bold mt-4">
+        <button
+          type="submit"
+          disabled={loading}
+          className="btn w-full bg-[#D4E96D] hover:bg-[#c2d950] border-none text-gray-800 font-bold mt-4"
+        >
           {loading ? "Registering..." : "Register"}
         </button>
       </form>
-      
+
       <div className="divider">OR</div>
-      <button onClick={handleGoogleSignUp} className="btn btn-outline w-full flex items-center gap-2 border-gray-300">
+      <button
+        onClick={handleGoogleSignUp}
+        className="btn btn-outline w-full flex items-center gap-2 border-gray-300"
+      >
         <FcGoogle size={20} /> Sign up with Google
       </button>
 
       <p className="text-center mt-6 text-sm text-gray-600">
-        Already have an account? <Link to="/login" className="text-[#0D2A38] font-bold underline">Login</Link>
+        Already have an account?{" "}
+        <Link to="/login" className="text-[#0D2A38] font-bold underline">
+          Login
+        </Link>
       </p>
     </div>
   );

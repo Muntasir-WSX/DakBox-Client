@@ -6,23 +6,18 @@ const ManageAllParcels = () => {
   const [parcels, setParcels] = useState([]);
   const [activeRiders, setActiveRiders] = useState([]);
   const [selectedParcel, setSelectedParcel] = useState(null);
-
-  // Pagination States
   const [currentPage, setCurrentPage] = useState(1);
   const [totalParcels, setTotalParcels] = useState(0);
   const itemsPerPage = 5;
-
   const axiosSecure = useAxiosSecure();
-
   const totalPages = Math.ceil(totalParcels / itemsPerPage);
   const pageNumbers = [...Array(totalPages).keys()].map((n) => n + 1);
 
-  // Fetch Parcels
+  
   useEffect(() => {
     const fetchParcels = async () => {
       try {
         const res = await axiosSecure.get(`/admin/all-parcels?page=${currentPage}&limit=${itemsPerPage}`);
-        // সার্ভার থেকে { result, totalCount } আসে, তাই res.data.result সেট করতে হবে
         setParcels(res.data?.result || []); 
         setTotalParcels(res.data?.totalCount || 0);
       } catch (error) {
@@ -88,12 +83,12 @@ const ManageAllParcels = () => {
 
   return (
     <div className="bg-white p-6 rounded-2xl shadow-sm min-h-screen flex flex-col">
-      <h2 className="text-3xl font-black text-[#0D2A38] mb-8 border-b pb-4">
-        Manage All <span className="text-[#A3B730]">Parcels</span>
-      </h2>
+      <h2 className="text-3xl font-black text-[#0D2A38] uppercase tracking-tight">
+       Manage All <span className="text-[#D9F26B] bg-[#0D2A38] px-2 rounded">Parcels</span>
+       </h2>
 
       {/* Table Section */}
-      <div className="overflow-x-auto grow">
+      <div className="overflow-x-auto mt-10 grow">
         <table className="table w-full">
           <thead className="bg-gray-100">
             <tr className="text-[#0D2A38] uppercase text-xs">

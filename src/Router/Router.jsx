@@ -29,11 +29,12 @@ import UserRoute from "../Routes/UserRoute";
 import MyEarnings from "../Pages/DashBoard/Admin/Riders/MyEarnings/MyEarnings";
 import MyCashout from "../Pages/DashBoard/Admin/Riders/MyCashout/MyCashout";
 import CashoutRequests from "../Pages/DashBoard/Admin/CashoutRequest/CashoutRequest";
+import AdminMain from "../Pages/DashBoard/Admin/AdminMain/AdminMain";
 
 
 
 export const router = createBrowserRouter([
-  // 1. main layout (Public Pages)
+  // 1. main layout (Public routes)
   {
     path: "/",
     element: <MainLayout />, 
@@ -101,6 +102,10 @@ export const router = createBrowserRouter([
       {
         path: 'track-parcel',
        element: <UserRoute><TrackPackage></TrackPackage></UserRoute>
+      },
+      {
+          path:"insights-analytics",
+          element: <AdminRoute><AdminMain></AdminMain></AdminRoute>
       },
       {
         path: 'make-admin',
