@@ -6,7 +6,7 @@ export const tabContents = {
         {
             name: "Muntasir Mahmud",
             role: "Founder & Lead Developer",
-            image: "https://res.cloudinary.com/dnk0bvpym/image/upload/v1769974393/IMG_20240202_014303_140_bi3kwg.jpg" // তোমার ইমেজ লিংক এখানে দাও
+            image: "https://res.cloudinary.com/dnk0bvpym/image/upload/v1769974393/IMG_20240202_014303_140_bi3kwg.jpg" 
         },
         {
             name: "Sumsed Tareq Jami",
