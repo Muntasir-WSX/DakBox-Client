@@ -2,15 +2,13 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import useAuth from "./useAuth";
 
-const axiosSecure = axios.create({
-  
+export const axiosSecure = axios.create({
   baseURL: "https://dak-box-server.vercel.app",
 });
 
 const useAxiosSecure = () => {
   const navigate = useNavigate();
   const { logOut } = useAuth();
-
   axiosSecure.interceptors.request.use(
     (config) => {
       const token = localStorage.getItem("access-token");
@@ -19,11 +17,15 @@ const useAxiosSecure = () => {
       }
       return config;
     },
-    (error) => Promise.reject(error)
+    (error) => {
+      return Promise.reject(error);
+    }
   );
 
   axiosSecure.interceptors.response.use(
-    (response) => response,
+    (response) => {
+      return response;
+    },
     async (error) => {
       const status = error.response ? error.response.status : null;
       if (status === 401 || status === 403) {

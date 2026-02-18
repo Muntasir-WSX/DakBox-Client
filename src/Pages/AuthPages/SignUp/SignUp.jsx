@@ -29,7 +29,7 @@ const SignUp = () => {
       last_login: new Date().toISOString(),
     };
 
-    const { data } = await axios.post("/jwt", {
+    const { data } = await axiosSecure.post("/jwt", {
       email: user?.email
     });
     if (data.token) {
