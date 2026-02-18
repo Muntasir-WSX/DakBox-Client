@@ -5,7 +5,8 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import useAuth from "../../../Hooks/useAuth";
 import toast from "react-hot-toast";
 import { Helmet } from "react-helmet-async";
-import useAxiosSecure from "../../../Hooks/useAxiosSecure";
+import UseAxios from "../../../Hooks/UseAxios";
+
 
 
 const SignIn = () => {
@@ -17,7 +18,7 @@ const SignIn = () => {
   
   const { signIn, signInWithGoogle } = useAuth();
   const navigate = useNavigate();
-  const axiosSecure = useAxiosSecure(); 
+  const axiosSecure = UseAxios(); 
   const location = useLocation();
   const from = location.state?.from?.pathname || "/";
 
@@ -30,7 +31,9 @@ const SignIn = () => {
         localStorage.setItem("access-token", data.token);
 
        
-        const roleRes = await axiosSecure.get(`/user-role?email=${email}`);
+       const roleRes = await axiosPublic.get(`/user-role?email=${email}`, {
+           headers: { authorization: `Bearer ${data.token}` } 
+        });
         const role = roleRes.data?.role;
 
         
