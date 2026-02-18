@@ -4,7 +4,7 @@ import useAuth from "./useAuth";
 import { useEffect } from "react";
 
 const axiosSecure = axios.create({
-  baseURL: "https://dak-box-server.vercel.app",
+  baseURL: `https://dak-box-server.vercel.app/`,
 });
 
 const useAxiosSecure = () => {
