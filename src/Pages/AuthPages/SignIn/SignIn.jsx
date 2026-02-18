@@ -31,7 +31,7 @@ const SignIn = () => {
         localStorage.setItem("access-token", data.token);
 
        
-       const roleRes = await axiosPublic.get(`/user-role?email=${email}`, {
+       const roleRes = await axiosSecure.get(`/user-role?email=${email}`, {
            headers: { authorization: `Bearer ${data.token}` } 
         });
         const role = roleRes.data?.role;
