@@ -29,8 +29,8 @@ const SignUp = () => {
       last_login: new Date().toISOString(),
     };
 
-    const { data } = await axios.post(`${import.meta.env.VITE_API_URL}/jwt`, {
-      email: user?.email,
+    const { data } = await axios.post("/jwt", {
+      email: user?.email
     });
     if (data.token) {
       localStorage.setItem("access-token", data.token);

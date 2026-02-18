@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import useAuth from "./useAuth";
 
 const axiosSecure = axios.create({
-  // সরাসরি লাইভ লিঙ্ক দিয়ে দিন যদি .env কাজ না করে
-  baseURL: import.meta.env.VITE_API_URL || "https://dak-box-server.vercel.app",
+  
+  baseURL: "https://dak-box-server.vercel.app",
 });
 
 const useAxiosSecure = () => {
