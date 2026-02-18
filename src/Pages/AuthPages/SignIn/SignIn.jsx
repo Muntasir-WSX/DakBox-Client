@@ -5,7 +5,8 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import useAuth from "../../../Hooks/useAuth";
 import toast from "react-hot-toast";
 import { Helmet } from "react-helmet-async";
-import axios from "axios";
+import useAxiosSecure from "../../../Hooks/useAxiosSecure";
+
 
 const SignIn = () => {
   const {
@@ -13,29 +14,33 @@ const SignIn = () => {
     handleSubmit,
     formState: { errors },
   } = useForm();
+  
   const { signIn, signInWithGoogle } = useAuth();
   const navigate = useNavigate();
+  const axiosSecure = useAxiosSecure(); 
   const location = useLocation();
   const from = location.state?.from?.pathname || "/";
 
   const handleJWTAndNavigate = async (email) => {
     try {
-      const { data } = await axios.post(`${import.meta.env.VITE_API_URL}/jwt`, {
-        email,
-      });
+   
+      const { data } = await axiosSecure.post("/jwt", { email });
+      
       if (data.token) {
         localStorage.setItem("access-token", data.token);
-        const roleRes = await axios.get(
-          `${import.meta.env.VITE_API_URL}/user-role?email=${email}`,
-          {
-            headers: { authorization: `Bearer ${data.token}` },
-          },
-        );
 
+       
+        const roleRes = await axiosSecure.get(`/user-role?email=${email}`);
         const role = roleRes.data?.role;
-        if (role === "admin") navigate("/dashboard/manage-admin");
-        else if (role === "rider") navigate("/dashboard/assigned-parcels");
-        else navigate("/dashboard/myparcels");
+
+        
+        if (role === "admin") {
+          navigate("/dashboard/manage-admin");
+        } else if (role === "rider") {
+          navigate("/dashboard/assigned-parcels");
+        } else {
+          navigate("/dashboard/myparcels");
+        }
       }
     } catch (err) {
       console.error("JWT/Role Error:", err);
@@ -53,12 +58,18 @@ const SignIn = () => {
             border: "1px solid #D9F26B",
           },
         });
-
         handleJWTAndNavigate(result.user.email);
       })
       .catch((error) => {
-        console.error(error);
+        console.error("Firebase Auth Error Code:", error.code);
+        console.error("Firebase Auth Error Message:", error.message);
         toast.error("Login failed. Check your credentials.");
+        if (error.code === 'auth/invalid-credential') {
+        toast.error("Invalid email or password. Please try again.");
+      } else {
+        toast.error("Login failed. " + error.message);
+      }
+    
       });
   };
 
@@ -68,7 +79,6 @@ const SignIn = () => {
         toast.success("Google Sign-in Successful", {
           style: { background: "#D9F26B", color: "#000" },
         });
-
         handleJWTAndNavigate(result.user.email);
       })
       .catch((error) => {
@@ -81,6 +91,7 @@ const SignIn = () => {
       <Helmet>
         <title>DakBox | Sign In</title>
       </Helmet>
+      
       <div className="mb-8 mt-4">
         <h1 className="text-4xl font-bold mb-2 text-gray-900">Sign In</h1>
         <p className="text-gray-500 text-sm">Welcome back to DakBox</p>
@@ -89,9 +100,7 @@ const SignIn = () => {
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div className="form-control w-full">
           <label className="label py-1">
-            <span className="label-text font-semibold text-gray-700">
-              Email
-            </span>
+            <span className="label-text font-semibold text-gray-700">Email</span>
           </label>
           <input
             type="email"
@@ -100,17 +109,13 @@ const SignIn = () => {
             className={`input input-bordered w-full bg-white focus:outline-none border-gray-300 ${errors.email ? "border-red-500" : "focus:border-[#D4E96D]"}`}
           />
           {errors.email && (
-            <span className="text-red-500 text-xs mt-1">
-              {errors.email.message}
-            </span>
+            <span className="text-red-500 text-xs mt-1">{errors.email.message}</span>
           )}
         </div>
 
         <div className="form-control w-full">
           <label className="label py-1">
-            <span className="label-text font-semibold text-gray-700">
-              Password
-            </span>
+            <span className="label-text font-semibold text-gray-700">Password</span>
           </label>
           <input
             type="password"
@@ -119,15 +124,10 @@ const SignIn = () => {
             className={`input input-bordered w-full bg-white focus:outline-none border-gray-300 ${errors.password ? "border-red-500" : "focus:border-[#D4E96D]"}`}
           />
           {errors.password && (
-            <span className="text-red-500 text-xs mt-1">
-              {errors.password.message}
-            </span>
+            <span className="text-red-500 text-xs mt-1">{errors.password.message}</span>
           )}
           <div className="flex justify-end mt-1">
-            <button
-              type="button"
-              className="text-xs text-[#a8bf34] hover:underline font-medium"
-            >
+            <button type="button" className="text-xs text-[#a8bf34] hover:underline font-medium">
               Forgot password?
             </button>
           </div>
@@ -144,10 +144,7 @@ const SignIn = () => {
       <div className="mt-6 text-sm">
         <p className="text-gray-600">
           New here?{" "}
-          <Link
-            to="/signup"
-            className="text-[#a8bf34] hover:underline font-bold"
-          >
+          <Link to="/signup" className="text-[#a8bf34] hover:underline font-bold">
             Create an Account
           </Link>
         </p>
